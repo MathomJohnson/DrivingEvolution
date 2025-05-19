@@ -9,11 +9,17 @@ export class Ray {
       this.endX = originX;
       this.endY = originY;
   
-      this.hitPoint = null;
-      this.distance = maxLength;
+      this.hitPoint = null; // [x, y]
+      this.distance = maxLength; // distance to the closest obstacle
     }
   
-    // Call this each frame to recompute based on current car position + obstacles
+    /**
+     * Recomputes the ray's intersection with the closest obstacle (if any).
+     * Updates endpoint and hit data.
+     * @param {number} originX - X position of the ray origin (usually car.x)
+     * @param {number} originY - Y position of the ray origin (usually car.y)
+     * @param {Obstacle[]} obstacles - List of obstacles to check against
+     */
     cast(originX, originY, obstacles) {
       this.originX = originX;
       this.originY = originY;
@@ -55,23 +61,40 @@ export class Ray {
       this.endY = closestPoint ? closestPoint[1] : rayEndY;
     }
   
+    /**
+     * Draws the ray and its hit point to the canvas.
+     * @param {CanvasRenderingContext2D} ctx - Canvas 2D context
+     */
     draw(ctx) {
-      ctx.strokeStyle = "rgba(0, 255, 0, 0.3)"; // semi-transparent green
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(this.originX, this.originY);
-      ctx.lineTo(this.endX, this.endY);
-      ctx.stroke();
-  
-      if (this.hitPoint) {
-        ctx.fillStyle = "red";
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.3)"; // semi-transparent green
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(this.hitPoint[0], this.hitPoint[1], 3, 0, 2 * Math.PI);
-        ctx.fill();
-      }
+        ctx.moveTo(this.originX, this.originY);
+        ctx.lineTo(this.endX, this.endY);
+        ctx.stroke();
+    
+        if (this.hitPoint) {
+            ctx.fillStyle = "red";
+            ctx.beginPath();
+            ctx.arc(this.hitPoint[0], this.hitPoint[1], 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // Draw distance value
+        // ctx.fillStyle = "white";
+        // ctx.font = "12px monospace";
+        // const labelX = this.endX;
+        // const labelY = this.endY;
+
+        // const normalized = (this.distance / this.maxLength).toFixed(2);
+        // ctx.fillText(normalized, labelX + 5, labelY - 5);
     }
   
-    // Helper: return 4 edges of rectangle
+    /**
+     * Returns the four edge segments of a rectangle as [start, end] point pairs.
+     * @param {Obstacle} rect - Obstacle rectangle
+     * @returns {Array} List of 4 edge line segments (top, right, bottom, left)
+     */
     getEdgesOfRect(rect) {
       const x1 = rect.x - rect.width / 2;
       const y1 = rect.y - rect.height / 2;
@@ -86,7 +109,15 @@ export class Ray {
       ];
     }
   
-    // Helper: returns [x, y] if lines intersect, else null
+    /**
+     * Computes the intersection point of two lines (a1–a2 and b1–b2), if any.
+     * Returns [x, y] if the lines intersect within their segments, else null.
+     * @param {[x, y]} a1 - Start of ray
+     * @param {[x, y]} a2 - End of ray
+     * @param {[x, y]} b1 - Start of edge
+     * @param {[x, y]} b2 - End of edge
+     * @returns {[x, y] | null} Intersection point, or null if no intersection
+     */
     getIntersection(a1, a2, b1, b2) {
       const [x1, y1] = a1;
       const [x2, y2] = a2;
@@ -113,6 +144,7 @@ export class Ray {
       return null;
     }
   
+    // Returns true if the point (px, py) lies within the segment (x1, y1)-(x2, y2).
     pointOnSegment(px, py, x1, y1, x2, y2) {
       return (
         px >= Math.min(x1, x2) &&

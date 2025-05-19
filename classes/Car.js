@@ -1,4 +1,5 @@
 import { Ray } from './Ray.js';
+import { NeuralNetwork } from './NeuralNetwork.js';
 
 export class Car {
     constructor(x, width, height, canvasWidth, speed) {
@@ -18,6 +19,8 @@ export class Car {
         this.speed = speed;
         // Whether the car has hit an obstacle or not
         this.alive = true;
+        // How far the car has traveled
+        this.fitness = 0;
 
         // Initialize rays
         this.numRays = 7;
@@ -31,6 +34,9 @@ export class Car {
             const offset = ((i - mid) / mid) * (this.raySpread / 2);
             this.rays.push(new Ray(this.x, this.y, offset, this.rayLength));
         }
+
+        // Neural network for decision making
+        this.brain = new NeuralNetwork();
     }
   
     /**
@@ -56,27 +62,26 @@ export class Car {
     update(obstacles) {
         if (!this.alive) return;
 
-        // Apply random steering (simulate NN output for now)
-        const steerDelta = (Math.random() - 0.5) * this.maxSteer * 2; // result [-this.maxSteer, +this.maxSteer]
-        this.angle += steerDelta;
-  
-        // Compute side drift based on current angle
-        this.x += Math.sin(this.angle) * this.speed;
-  
-        // Eliminate car if it goes off-screen (left or right)
-        const leftEdge = this.x - this.width / 2;
-        const rightEdge = this.x + this.width / 2;
-
-        if (leftEdge < 0 || rightEdge > this.canvasWidth) {
-            this.alive = false;
-        }
-
-        // Update ray angles based on car's current angle
+        // 1. Update ray angles based on current car angle
         for (const ray of this.rays) {
             ray.angle = this.angle + ray.baseAngle;
         }
 
+        // 2. Cast rays and compute intersections
         this.updateRays(obstacles);
+
+        // 3. Normalize ray distances and feed into NN
+        const inputs = this.rays.map(ray => ray.distance / ray.maxLength); // values in [0,1]
+
+        // 4. Predict steering using NN
+        const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
+
+        // 5. Update car angle and position
+        this.angle += steerDelta;
+        this.x += Math.sin(this.angle) * this.speed;
+
+        // 6. Accumulate fitness (e.g., distance traveled)
+        this.fitness += this.speed;
     }
   
     /**
@@ -112,6 +117,25 @@ export class Car {
 
         // Restore canvas state to before transformations
         ctx.restore();
+    }
+
+    /**
+     * Creates a deep clone of this car, including its neural network.
+     * Used during evolution to preserve elite behavior.
+     * @returns {Car} A new Car object with cloned brain.
+     */
+    clone() {
+        const clone = new Car(
+            this.x,
+            this.width,
+            this.height,
+            this.canvasWidth,
+            this.speed
+        );
+        clone.brain = this.brain.clone();
+        clone.angle = 0; // Reset angle for new generation
+        clone.fitness = 0; // Reset fitness for new generation
+        return clone;
     }
 }
   

@@ -9,11 +9,21 @@ export class ObstacleManager {
         this.height = 15;
         this.obstacles = [];
 
+        this.initializeObstacles();
+    }
+
+    initializeObstacles() {
+        this.obstacles = [];
+        // Add moving obstacles
         for (let i = 0; i < this.count; i++) {
             const x = this.getRandomX();
-            const y = -i * 200;
+            const y = -i * 200;  // Space them out vertically above the screen
             this.obstacles.push(new Obstacle(x, y, this.width, this.height, this.speed));
         }
+
+        // Manually add sides of the road as obstacles
+        this.obstacles.push(new Obstacle(0, this.canvas.height / 2, 10, this.canvas.height, 0)); // left wall
+        this.obstacles.push(new Obstacle(this.canvas.width, this.canvas.height / 2, 10, this.canvas.height, 0)); // right wall
     }
 
     getRandomX() {
@@ -38,7 +48,6 @@ export class ObstacleManager {
         }
     }
 
-
     drawAll(ctx) {
         for (const obs of this.obstacles) {
             obs.draw(ctx);
@@ -47,5 +56,22 @@ export class ObstacleManager {
 
     getObstacles() {
         return this.obstacles;
+    }
+
+    // Reset all moving obstacles to starting positions
+    reset() {
+        // Keep the last two obstacles (walls) and reset the moving ones
+        const walls = this.obstacles.slice(-2);
+        this.obstacles = [];
+        
+        // Reinitialize moving obstacles
+        for (let i = 0; i < this.count; i++) {
+            const x = this.getRandomX();
+            const y = -i * 200;  // Space them out vertically above the screen
+            this.obstacles.push(new Obstacle(x, y, this.width, this.height, this.speed));
+        }
+        
+        // Add back the walls
+        this.obstacles.push(...walls);
     }
 }
