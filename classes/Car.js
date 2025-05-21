@@ -4,7 +4,7 @@ import { NeuralNetwork } from './NeuralNetwork.js';
 export class Car {
     constructor(x, width, height, canvasWidth, speed) {
         this.x = x;
-        this.y = null;  // Will be set in draw() based on canvas height
+        this.y = 800 * 0.8;  // Will be set in draw() based on canvas height
         // Width and height of the car
         this.width = width;
         this.height = height;
@@ -76,8 +76,10 @@ export class Car {
         // 4. Predict steering using NN
         const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
 
-        // 5. Update car angle and position
-        this.angle += steerDelta;
+        // 5. Update car angle and position, with clamping
+        const newAngle = this.angle + steerDelta;
+        // Clamp angle between -π/2 and π/2 (90 degrees)
+        this.angle = Math.max(-Math.PI/2, Math.min(Math.PI/2, newAngle));
         this.x += Math.sin(this.angle) * this.speed;
 
         // 6. Accumulate fitness (e.g., distance traveled)
@@ -132,6 +134,8 @@ export class Car {
             this.canvasWidth,
             this.speed
         );
+        clone.alive = true;
+        console.log("Cloning brain");
         clone.brain = this.brain.clone();
         clone.angle = 0; // Reset angle for new generation
         clone.fitness = 0; // Reset fitness for new generation

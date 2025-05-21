@@ -1,7 +1,7 @@
 import { Car } from "../classes/Car.js";
 
 export class SimulationManager {
-    constructor(canvas, obstacleManager, populationSize = 50, eliteCount = 5) {
+    constructor(canvas, obstacleManager, populationSize = 1, eliteCount = 1) {
         this.canvas = canvas;
         this.obstacleManager = obstacleManager;
         this.populationSize = populationSize;
@@ -23,15 +23,16 @@ export class SimulationManager {
         for (let i = 0; i < this.populationSize; i++) {
             this.cars.push(new Car(
                 this.canvas.width / 2,  // x
-                40,                     // width
-                70,                     // height
+                30,                     // width
+                60,                     // height
                 this.canvas.width,      // canvasWidth
                 1                       // speed
             ));
         }
         this.deadCars = [];
         this.maxFitness = 0;
-        console.log(`Spawned initial population of ${this.populationSize} cars`);
+        console.log("hi");
+        console.log("Initial brain: ", this.cars[0].brain.weights_ih, this.cars[0].brain.bias_h, this.cars[0].brain.weights_ho, this.cars[0].brain.bias_o);
     }
 
     update() {
@@ -45,7 +46,6 @@ export class SimulationManager {
                 car.update(this.obstacleManager.getObstacles());
                 this.maxFitness = Math.max(this.maxFitness, car.fitness);
                 if (!car.alive) {
-                    console.log(`Car died with fitness: ${car.fitness}`);
                     this.deadCars.push(car);
                 }
             }
@@ -55,7 +55,6 @@ export class SimulationManager {
         const allDead = this.cars.every(car => !car.alive);
         if (allDead && !this.isEvolving && !this.evolutionDelay) {
             this.evolutionDelay = true;
-            console.log(`All cars dead in generation ${this.generation}, waiting 1 second...`);
             
             setTimeout(() => {
                 this.isEvolving = true;
@@ -125,35 +124,37 @@ export class SimulationManager {
     }
 
     evolveNextGeneration() {
-        // Sort by fitness and get elites
-        this.deadCars.sort((a, b) => b.fitness - a.fitness);
-        console.log(`Top 3 fitness scores:`, 
-            this.deadCars.slice(0, 3).map(car => car.fitness));
-
-        const elites = this.deadCars.slice(0, this.eliteCount);
+        this.cars.sort((a, b) => b.fitness - a.fitness);
+        const elites = this.cars.slice(0, this.eliteCount);
         const newCars = [];
 
         // Add unmutated elites
         for (const elite of elites) {
-            newCars.push(elite.clone());
+            const clonedCar = elite.clone();
+            console.log("New elite car alive status:", clonedCar.alive);
+            newCars.push(clonedCar);
         }
 
         // Add mutated children of elites
         const childrenPerElite = Math.floor((this.populationSize - this.eliteCount) / this.eliteCount);
+        console.log("1");
         for (const elite of elites) {
+            console.log("2");
             for (let i = 0; i < childrenPerElite; i++) {
+                console.log("About to clone elite");
                 const child = elite.clone();
-                child.brain.mutate(0.35); // 35% mutation rate
+                child.brain.mutate(0); // 10% mutation rate
                 newCars.push(child);
             }
         }
 
         // Fill any remaining slots with new random cars
         while (newCars.length < this.populationSize) {
+            console.log("3");
             newCars.push(new Car(
                 this.canvas.width / 2,
-                40,
-                70,
+                30,
+                60,
                 this.canvas.width,
                 1
             ));
@@ -164,11 +165,11 @@ export class SimulationManager {
         this.deadCars = [];
         this.maxFitness = 0;
         this.generation++;
+
+        console.log("New brain: ", this.cars[0].brain.weights_ih, this.cars[0].brain.bias_h, this.cars[0].brain.weights_ho, this.cars[0].brain.bias_o);
         
         // Reset obstacles to prevent spawn killing
         this.obstacleManager.reset();
-        
-        console.log(`Starting generation ${this.generation} with ${this.cars.length} cars`);
     }
 
     getAliveCars() {
