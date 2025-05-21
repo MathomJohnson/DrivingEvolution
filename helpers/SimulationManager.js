@@ -1,7 +1,7 @@
 import { Car } from "../classes/Car.js";
 
 export class SimulationManager {
-    constructor(canvas, obstacleManager, populationSize = 1, eliteCount = 1) {
+    constructor(canvas, obstacleManager, populationSize = 70, eliteCount = 10) {
         this.canvas = canvas;
         this.obstacleManager = obstacleManager;
         this.populationSize = populationSize;
@@ -39,15 +39,18 @@ export class SimulationManager {
         // Skip updates during evolution or delay
         if (this.isEvolving || this.evolutionDelay) return;
 
+
+        // update obstacles
+        this.obstacleManager.updateAll(this.getAliveCars());
+        this.obstacleManager.drawAll(this.canvas.getContext("2d")); // simplify later, ctx should be passed in
+
         // Update living cars and track max fitness
         this.maxFitness = 0;
         for (const car of this.cars) {
             if (car.alive) {
+                // update ray values
                 car.update(this.obstacleManager.getObstacles());
                 this.maxFitness = Math.max(this.maxFitness, car.fitness);
-                if (!car.alive) {
-                    this.deadCars.push(car);
-                }
             }
         }
 
@@ -143,7 +146,7 @@ export class SimulationManager {
             for (let i = 0; i < childrenPerElite; i++) {
                 console.log("About to clone elite");
                 const child = elite.clone();
-                child.brain.mutate(0); // 10% mutation rate
+                child.brain.mutate(0.1); // 10% mutation rate
                 newCars.push(child);
             }
         }

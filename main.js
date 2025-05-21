@@ -22,8 +22,8 @@ const SPEED = 1;
 
 // Initialize managers
 // const carManager = new CarManager(canvas, 10, SPEED);
-const obstacleManager = new ObstacleManager(canvas, 4, SPEED);
-const simManager = new SimulationManager(canvas, obstacleManager);
+//const obstacleManager = new ObstacleManager(canvas, 4, SPEED);
+const simManager = new SimulationManager(canvas, new ObstacleManager(canvas, 6, SPEED));
 
 // Animation loop
 function animate() {
@@ -31,9 +31,6 @@ function animate() {
 
     updateRoadLines(SPEED, canvas.height);
     drawRoadLines(ctx, canvas.width);
-
-    obstacleManager.updateAll(simManager.getAliveCars());
-    obstacleManager.drawAll(ctx);
   
     // carManager.updateAll(obstacleManager.getObstacles());
     // carManager.drawAll(ctx);

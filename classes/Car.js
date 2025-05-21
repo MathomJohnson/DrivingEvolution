@@ -128,7 +128,7 @@ export class Car {
      */
     clone() {
         const clone = new Car(
-            this.x,
+            this.canvasWidth / 2,
             this.width,
             this.height,
             this.canvasWidth,
