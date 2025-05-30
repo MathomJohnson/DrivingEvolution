@@ -1,20 +1,19 @@
 import { Obstacle } from "../classes/Obstacle.js";
 
 export class ObstacleManager {
-    constructor(canvas, obstacleCount = 5, speed) {
+    constructor(canvas, obstacleCount, speed) {
         this.canvas = canvas;
         this.count = obstacleCount;
         this.speed = speed;
-        this.width = 40;
-        this.height = 15;
+        this.width = 40; // width of obstacles
+        this.height = 15; // height of obstacles
         this.obstacles = [];
 
         this.initializeObstacles();
     }
 
     initializeObstacles() {
-        this.obstacles = [];
-        // Add moving obstacles
+        // Add obstacles and position randomly
         for (let i = 0; i < this.count; i++) {
             const x = this.getRandomX();
             const y = -i * 200;  // Space them out vertically above the screen
@@ -35,6 +34,7 @@ export class ObstacleManager {
         for (const obs of this.obstacles) {
             obs.update();
 
+            // Reset obstacle if it goes below the screen
             if (obs.y - obs.height / 2 > this.canvas.height) {
                 obs.y = -this.height;
                 obs.x = this.getRandomX();
