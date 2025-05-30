@@ -135,7 +135,7 @@ export class Car {
             this.speed
         );
         clone.alive = true;
-        console.log("Cloning brain");
+        //console.log("Cloning brain");
         clone.brain = this.brain.clone();
         clone.angle = 0; // Reset angle for new generation
         clone.fitness = 0; // Reset fitness for new generation

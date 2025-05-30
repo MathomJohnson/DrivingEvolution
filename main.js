@@ -20,8 +20,10 @@ const SPEED = 1;
 const NUM_OBSTACLES = 6;
 const POPULATION_SIZE = 30;
 const PARENT_COUNT = 10;
+const MUTATION_RATE = 0.1;
 
-const simManager = new SimulationManager(canvas, new ObstacleManager(canvas, NUM_OBSTACLES, SPEED), POPULATION_SIZE, PARENT_COUNT);
+const simManager = new SimulationManager(canvas, new ObstacleManager(canvas, NUM_OBSTACLES, SPEED), 
+  POPULATION_SIZE, PARENT_COUNT, SPEED, MUTATION_RATE);
 
 // Animation loop
 function animate() {

@@ -63,28 +63,28 @@ export class NeuralNetwork {
      * @returns {NeuralNetwork} A new identical neural network object.
      */
     clone() {
-        console.log("Cloning neural network...");
+        //console.log("Cloning neural network...");
         
         const clone = new NeuralNetwork();
 
-        console.log("Original weights before clone:", JSON.stringify({
-            weights_ih: this.weights_ih,
-            bias_h: this.bias_h,
-            weights_ho: this.weights_ho,
-            bias_o: this.bias_o
-        }));
+        // console.log("Original weights before clone:", JSON.stringify({
+        //     weights_ih: this.weights_ih,
+        //     bias_h: this.bias_h,
+        //     weights_ho: this.weights_ho,
+        //     bias_o: this.bias_o
+        // }));
 
         clone.weights_ih = this.weights_ih.map(row => [...row]);
         clone.bias_h = [...this.bias_h];
         clone.weights_ho = [...this.weights_ho];
         clone.bias_o = this.bias_o;
 
-        console.log("Cloned weights after copy:", JSON.stringify({
-            weights_ih: clone.weights_ih,
-            bias_h: clone.bias_h,
-            weights_ho: clone.weights_ho,
-            bias_o: clone.bias_o
-        }));
+        // console.log("Cloned weights after copy:", JSON.stringify({
+        //     weights_ih: clone.weights_ih,
+        //     bias_h: clone.bias_h,
+        //     weights_ho: clone.weights_ho,
+        //     bias_o: clone.bias_o
+        // }));
 
         return clone;
     }
