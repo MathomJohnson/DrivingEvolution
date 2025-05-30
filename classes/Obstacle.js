@@ -18,11 +18,10 @@ export class Obstacle {
   
     /**
      * Check if the obstacle collides with the car
-     * @param {Car object} car 
+     * @param { Car } car 
      * @returns True if the obstacle collides with the car, false otherwise
      */
     collidesWith(car) {
-        //const y = car.y ?? ctx.canvas.height * 0.8; // fixed y draw position
         return (
             this.y + this.height / 2 > car.y - car.height / 2 &&
             this.y - this.height / 2 < car.y + car.height / 2 &&

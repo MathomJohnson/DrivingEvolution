@@ -25,10 +25,10 @@ export class SimulationManager {
         for (let i = 0; i < this.populationSize; i++) {
             this.cars.push(new Car(
                 this.canvas.width / 2,  // x
-                this.CAR_WIDTH,         // width           
-                this.CAR_HEIGHT,        // height
-                this.canvas.width,      // canvasWidth
-                this.speed              // speed
+                this.CAR_WIDTH,
+                this.CAR_HEIGHT,
+                this.canvas,
+                this.speed
             ));
         }
     }
