@@ -1,7 +1,7 @@
 import { Car } from "../classes/Car.js";
 
 export class SimulationManager {
-    constructor(canvas, obstacleManager, populationSize = 70, eliteCount = 10) {
+    constructor(canvas, obstacleManager, populationSize, eliteCount) {
         this.canvas = canvas;
         this.obstacleManager = obstacleManager;
         this.populationSize = populationSize;
@@ -31,8 +31,7 @@ export class SimulationManager {
         }
         this.deadCars = [];
         this.maxFitness = 0;
-        console.log("hi");
-        console.log("Initial brain: ", this.cars[0].brain.weights_ih, this.cars[0].brain.bias_h, this.cars[0].brain.weights_ho, this.cars[0].brain.bias_o);
+        // console.log("Initial brain: ", this.cars[0].brain.weights_ih, this.cars[0].brain.bias_h, this.cars[0].brain.weights_ho, this.cars[0].brain.bias_o);
     }
 
     update() {

@@ -1,4 +1,3 @@
-// import { Car } from "./classes/Car.js";
 import { SimulationManager } from './helpers/SimulationManager.js';
 import {
     initRoadLines,
@@ -6,7 +5,6 @@ import {
     drawRoadLines,
   } from './helpers/roadLines.js';
 import { ObstacleManager } from './helpers/ObstacleManager.js';
-// import { CarManager } from './helpers/CarManager.js';
 
 // Get canvas and context
 const canvas = document.getElementById("canvas");
@@ -17,13 +15,13 @@ const ctx = canvas.getContext("2d");
 // Initialize road lines
 initRoadLines(canvas.height);
 
-// Defines the speed of cars, road lines, and obstacles
+// Define constants
 const SPEED = 1;
+const NUM_OBSTACLES = 6;
+const POPULATION_SIZE = 30;
+const PARENT_COUNT = 10;
 
-// Initialize managers
-// const carManager = new CarManager(canvas, 10, SPEED);
-//const obstacleManager = new ObstacleManager(canvas, 4, SPEED);
-const simManager = new SimulationManager(canvas, new ObstacleManager(canvas, 6, SPEED));
+const simManager = new SimulationManager(canvas, new ObstacleManager(canvas, NUM_OBSTACLES, SPEED), POPULATION_SIZE, PARENT_COUNT);
 
 // Animation loop
 function animate() {
@@ -32,8 +30,6 @@ function animate() {
     updateRoadLines(SPEED, canvas.height);
     drawRoadLines(ctx, canvas.width);
   
-    // carManager.updateAll(obstacleManager.getObstacles());
-    // carManager.drawAll(ctx);
     simManager.update();
     simManager.draw(ctx);
   
