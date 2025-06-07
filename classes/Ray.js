@@ -78,7 +78,7 @@ export class Ray {
             ctx.beginPath();
             ctx.arc(this.hitPoint[0], this.hitPoint[1], 3, 0, 2 * Math.PI);
             ctx.fill();
-        }
+        } 
 
         // Draw distance value
         // ctx.fillStyle = "white";
