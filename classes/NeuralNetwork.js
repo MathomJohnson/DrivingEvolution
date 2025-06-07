@@ -1,27 +1,35 @@
 export class NeuralNetwork {
-    constructor() {
-        this.inputSize = 7;
-        this.hiddenSize = 3;
-        this.outputSize = 1;
-    
-        // Initialize weights (hidden layer: 3x7)
-        this.weights_ih = Array.from({ length: this.hiddenSize }, () =>
-          Array.from({ length: this.inputSize }, () => this.randomWeight())
-        );
-    
-        // Initialize biases for hidden layer (3)
-        this.bias_h = Array.from({ length: this.hiddenSize }, () => this.randomWeight());
-    
-        // Initialize weights from hidden to output (1x3)
-        this.weights_ho = Array.from({ length: this.hiddenSize }, () => this.randomWeight());
-    
-        // Initialize output bias (scalar)
-        this.bias_o = this.randomWeight();
+    /**
+     * Creates a feed forward neural network.
+     * @param {number} inputSize  Number of input neurons.
+     * @param {number[]} hiddenSizes Array specifying the neuron count for each hidden layer.
+     * @param {number} outputSize Number of output neurons.
+     */
+    constructor(inputSize = 7, hiddenSizes = [10, 5], outputSize = 1) {
+        this.inputSize = inputSize;
+        this.hiddenSizes = hiddenSizes;
+        this.outputSize = outputSize;
+
+        this.layerSizes = [inputSize, ...hiddenSizes, outputSize];
+
+        // Initialize weights and biases for each layer pair
+        this.weights = [];
+        this.biases = [];
+        for (let i = 0; i < this.layerSizes.length - 1; i++) {
+            const rows = this.layerSizes[i + 1];
+            const cols = this.layerSizes[i];
+            const weightMatrix = Array.from({ length: rows }, () =>
+                Array.from({ length: cols }, () => this.randomWeight())
+            );
+            const biasVector = Array.from({ length: rows }, () => this.randomWeight());
+            this.weights.push(weightMatrix);
+            this.biases.push(biasVector);
+        }
     }
   
     /**
      * Performs a forward pass through the network.
-     * @param {number[]} inputs - Array of 7 normalized ray distances.
+     * @param {number[]} inputs - Normalized sensor values.
      * @returns {number} Output between -1 and 1 representing steering delta.
      */
     predict(inputs) {
@@ -29,23 +37,23 @@ export class NeuralNetwork {
             throw new Error(`Expected ${this.inputSize} inputs, got ${inputs.length}`);
         }
 
-        // Compute hidden layer activations
-        const hidden = [];
-        for (let i = 0; i < this.hiddenSize; i++) {
-            let sum = this.bias_h[i];
-            for (let j = 0; j < this.inputSize; j++) {
-                sum += this.weights_ih[i][j] * inputs[j];
+        let activations = inputs;
+        for (let layer = 0; layer < this.weights.length; layer++) {
+            const next = [];
+            const weights = this.weights[layer];
+            const biases = this.biases[layer];
+
+            for (let i = 0; i < weights.length; i++) {
+                let sum = biases[i];
+                for (let j = 0; j < weights[i].length; j++) {
+                    sum += weights[i][j] * activations[j];
+                }
+                next[i] = this.tanh(sum);
             }
-            hidden[i] = this.tanh(sum);
+            activations = next;
         }
 
-        // Compute output layer
-        let output = this.bias_o;
-        for (let i = 0; i < this.hiddenSize; i++) {
-            output += this.weights_ho[i] * hidden[i];
-        }
-
-        return this.tanh(output);
+        return activations[0];
     }
 
     // Simple tanh activation function
@@ -63,29 +71,9 @@ export class NeuralNetwork {
      * @returns {NeuralNetwork} A new identical neural network object.
      */
     clone() {
-        //console.log("Cloning neural network...");
-        
-        const clone = new NeuralNetwork();
-
-        // console.log("Original weights before clone:", JSON.stringify({
-        //     weights_ih: this.weights_ih,
-        //     bias_h: this.bias_h,
-        //     weights_ho: this.weights_ho,
-        //     bias_o: this.bias_o
-        // }));
-
-        clone.weights_ih = this.weights_ih.map(row => [...row]);
-        clone.bias_h = [...this.bias_h];
-        clone.weights_ho = [...this.weights_ho];
-        clone.bias_o = this.bias_o;
-
-        // console.log("Cloned weights after copy:", JSON.stringify({
-        //     weights_ih: clone.weights_ih,
-        //     bias_h: clone.bias_h,
-        //     weights_ho: clone.weights_ho,
-        //     bias_o: clone.bias_o
-        // }));
-
+        const clone = new NeuralNetwork(this.inputSize, [...this.hiddenSizes], this.outputSize);
+        clone.weights = this.weights.map(layer => layer.map(row => [...row]));
+        clone.biases = this.biases.map(layer => [...layer]);
         return clone;
     }
     
@@ -96,12 +84,12 @@ export class NeuralNetwork {
      */
     mutate(rate) {
         const mutateValue = v =>
-        Math.random() < rate ? v + (Math.random() * 2 - 1) * 0.08 : v; // Gives a random number in the range [–0.08, +0.08]
-    
-        this.weights_ih = this.weights_ih.map(row => row.map(mutateValue));
-        this.bias_h = this.bias_h.map(mutateValue);
-        this.weights_ho = this.weights_ho.map(mutateValue);
-        this.bias_o = mutateValue(this.bias_o);
+            Math.random() < rate ? v + (Math.random() * 2 - 1) * 0.08 : v;
+
+        this.weights = this.weights.map(layer =>
+            layer.map(row => row.map(mutateValue))
+        );
+        this.biases = this.biases.map(layer => layer.map(mutateValue));
     }
 }
   
