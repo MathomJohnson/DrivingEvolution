@@ -2,7 +2,7 @@ import { Ray } from './Ray.js';
 import { NeuralNetwork } from './NeuralNetwork.js';
 
 export class Car {
-    constructor(x, width, height, canvasWidth, speed) {
+    constructor(x, width, height, canvasWidth, speed, centerPenalty = 0.5) {
         this.x = x;
         this.y = 800 * 0.8;  // Will be set in draw() based on canvas height
         // Width and height of the car
@@ -10,6 +10,7 @@ export class Car {
         this.height = height;
 
         this.canvasWidth = canvasWidth;
+        this.centerPenalty = centerPenalty;
 
         // Current angle of the car, affects how quickly the car shifts left or right
         this.angle = 0;
@@ -82,8 +83,12 @@ export class Car {
         this.angle = Math.max(-Math.PI/2, Math.min(Math.PI/2, newAngle));
         this.x += Math.sin(this.angle) * this.speed;
 
-        // 6. Accumulate fitness (e.g., distance traveled)
+        // 6. Accumulate fitness and apply center penalty
         this.fitness += this.speed;
+
+        const centerOffset = Math.abs(this.x - this.canvasWidth / 2);
+        const offsetRatio = centerOffset / (this.canvasWidth / 2);
+        this.fitness -= offsetRatio * this.speed * this.centerPenalty;
     }
   
     /**
@@ -132,7 +137,8 @@ export class Car {
             this.width,
             this.height,
             this.canvasWidth,
-            this.speed
+            this.speed,
+            this.centerPenalty
         );
         clone.alive = true;
         //console.log("Cloning brain");
