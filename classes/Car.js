@@ -11,6 +11,10 @@ export class Car {
 
         this.canvasWidth = canvasWidth;
 
+        // Penalty multiplier applied when the car strays from the road center
+        // Randomized on creation but preserved when cloning
+        this.centerPenaltyMultiplier = Math.random() * 0.5 + 0.5;
+
         // Current angle of the car, affects how quickly the car shifts left or right
         this.angle = 0;
         // Maximum angle change per update
@@ -82,8 +86,14 @@ export class Car {
         this.angle = Math.max(-Math.PI/2, Math.min(Math.PI/2, newAngle));
         this.x += Math.sin(this.angle) * this.speed;
 
-        // 6. Accumulate fitness (e.g., distance traveled)
+        // 6. Accumulate fitness (distance traveled) and apply penalty for
+        // drifting away from the road center
         this.fitness += this.speed;
+
+        const centerX = this.canvasWidth / 2;
+        const distanceFromCenter = Math.abs(this.x - centerX);
+        const normalized = distanceFromCenter / centerX; // 0 at center, 1 at edge
+        this.fitness -= normalized * this.centerPenaltyMultiplier * this.speed;
     }
   
     /**
@@ -134,6 +144,7 @@ export class Car {
             this.canvasWidth,
             this.speed
         );
+        clone.centerPenaltyMultiplier = this.centerPenaltyMultiplier;
         clone.alive = true;
         //console.log("Cloning brain");
         clone.brain = this.brain.clone();
