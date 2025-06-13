@@ -91,5 +91,29 @@ export class NeuralNetwork {
         );
         this.biases = this.biases.map(layer => layer.map(mutateValue));
     }
+
+    /**
+     * Prints the neural network structure to the console in a readable format.
+     */
+    printNetwork() {
+        console.log('\n=== Neural Network Structure ===');
+        console.log(`Input Layer: ${this.inputSize} neurons`);
+        this.hiddenSizes.forEach((size, i) => {
+            console.log(`Hidden Layer ${i + 1}: ${size} neurons`);
+        });
+        console.log(`Output Layer: ${this.outputSize} neurons\n`);
+
+        console.log('=== Weights and Biases ===');
+        for (let i = 0; i < this.weights.length; i++) {
+            console.log(`\nLayer ${i + 1} (${this.layerSizes[i]} → ${this.layerSizes[i + 1]}):`);
+            console.log('Weights:');
+            this.weights[i].forEach((row, j) => {
+                console.log(`  Neuron ${j + 1}: ${row.map(w => w.toFixed(3)).join(', ')}`);
+            });
+            console.log('Biases:');
+            console.log(`  ${this.biases[i].map(b => b.toFixed(3)).join(', ')}`);
+        }
+        console.log('\n===========================\n');
+    }
 }
   

@@ -122,6 +122,12 @@ export class SimulationManager {
     evolveNextGeneration() {
         this.cars.sort((a, b) => b.fitness - a.fitness); // sort by fitness
         const elites = this.cars.slice(0, this.eliteCount); // get best cars
+        
+        // Print the best car's neural network
+        console.log(`\n=== Best Car from Generation ${this.generation} ===`);
+        console.log(`Fitness: ${Math.floor(elites[0].fitness)}`);
+        elites[0].brain.printNetwork();
+        
         const newCars = [];
 
         // Add unmutated elites
