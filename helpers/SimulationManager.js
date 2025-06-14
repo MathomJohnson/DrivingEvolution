@@ -16,6 +16,7 @@ export class SimulationManager {
         this.cars = [];
         this.deadCars = [];
         this.maxFitness = 0;  // Track best fitness in current generation
+        this.distanceTraveled = 0; // Total distance traveled this generation
         this.isEvolving = false; // Flag for generation transition delay
 
         this.spawnInitialPopulation();
@@ -47,6 +48,11 @@ export class SimulationManager {
                 car.update(this.obstacleManager.getObstacles());
                 this.maxFitness = Math.max(this.maxFitness, car.fitness);
             }
+        }
+
+        // Increment overall distance if at least one car is alive
+        if (this.cars.some(car => car.alive)) {
+            this.distanceTraveled += this.speed;
         }
 
         // Check if all cars are dead
@@ -88,7 +94,7 @@ export class SimulationManager {
             
             // Draw message
             const message = `Generation ${this.generation} Complete`;
-            const subMessage = `Best Distance: ${Math.floor(this.maxFitness)}`;
+            const subMessage = `Best Distance: ${Math.floor(this.distanceTraveled)}`;
             ctx.fillText(message, this.canvas.width / 2, this.canvas.height / 2 - 20);
             ctx.fillText(subMessage, this.canvas.width / 2, this.canvas.height / 2 + 20);
             
@@ -109,8 +115,8 @@ export class SimulationManager {
         ctx.textAlign = "left";
         ctx.fillText(`Generation: ${this.generation}`, 10, 30);
         
-        // Draw current max fitness
-        ctx.fillText(`Distance: ${Math.floor(this.maxFitness)}`, 10, 55);
+        // Draw current distance traveled
+        ctx.fillText(`Distance: ${Math.floor(this.distanceTraveled)}`, 10, 55);
         
         // Draw alive cars count
         const aliveCount = this.cars.filter(car => car.alive).length;
@@ -126,6 +132,7 @@ export class SimulationManager {
         // Print the best car's neural network
         console.log(`\n=== Best Car from Generation ${this.generation} ===`);
         console.log(`Fitness: ${Math.floor(elites[0].fitness)}`);
+        console.log(`Distance: ${Math.floor(this.distanceTraveled)}`);
         elites[0].brain.printNetwork();
         
         const newCars = [];
@@ -161,6 +168,7 @@ export class SimulationManager {
         this.cars = newCars;
         this.deadCars = [];
         this.maxFitness = 0;
+        this.distanceTraveled = 0;
         this.generation++;
 
         

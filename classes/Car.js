@@ -23,7 +23,7 @@ export class Car {
         this.speed = speed;
         // Whether the car has hit an obstacle or not
         this.alive = true;
-        // How far the car has traveled
+        // Fitness value used for evolution (includes penalties)
         this.fitness = 0;
 
         // Initialize rays
@@ -86,7 +86,7 @@ export class Car {
         this.angle = Math.max(-Math.PI/2, Math.min(Math.PI/2, newAngle));
         this.x += Math.sin(this.angle) * this.speed;
 
-        // 6. Accumulate fitness (distance traveled) and apply penalty for
+        // 6. Update fitness (distance traveled) and apply penalty for
         // drifting away from the road center
         this.fitness += this.speed;
 
