@@ -13,7 +13,7 @@ export class Car {
 
         // Penalty multiplier applied when the car strays from the road center
         // Randomized on creation but preserved when cloning
-        this.centerPenaltyMultiplier = 100; // Math.random() * 0.5 + 0.5;
+        this.centerPenaltyMultiplier = 0.85; // Math.random() * 0.5 + 0.5;
 
         // Current angle of the car, affects how quickly the car shifts left or right
         this.angle = 0;
@@ -111,6 +111,32 @@ export class Car {
         for (const ray of this.rays) {
             ray.draw(ctx);
         }
+
+        // Draw fitness score above car (in world space, before transformations)
+        ctx.save();
+        ctx.font = "12px monospace";
+        const fitnessText = Math.floor(this.fitness).toString();
+        const textWidth = ctx.measureText(fitnessText).width;
+        
+        // Draw background rectangle for better readability
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(
+            this.x - textWidth/2 - 2,  // x
+            this.y - this.height/2 - 20,  // y (above car)
+            textWidth + 4,  // width
+            16  // height
+        );
+        
+        // Draw fitness text
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+            fitnessText,
+            this.x,
+            this.y - this.height/2 - 12
+        );
+        ctx.restore();
 
         // Save the current canvas state before transformations
         ctx.save();
