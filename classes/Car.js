@@ -12,8 +12,7 @@ export class Car {
         this.canvasWidth = canvasWidth;
 
         // Penalty multiplier applied when the car strays from the road center
-        // Randomized on creation but preserved when cloning
-        this.centerPenaltyMultiplier = 0.85; // Math.random() * 0.5 + 0.5;
+        this.centerPenaltyMultiplier = 0.8; // Math.random() * 0.5 + 0.5;
 
         // Current angle of the car, affects how quickly the car shifts left or right
         this.angle = 0;
