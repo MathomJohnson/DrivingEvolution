@@ -27,8 +27,14 @@ export class ObstacleManager {
     }
 
     getRandomX() {
-        const margin = 40;
-        return margin + Math.random() * (this.canvas.width - 2 * margin);
+        // Allow obstacles to spawn partially outside the road bounds so that
+        // "side hugging" cars cannot exploit a gap next to the walls. An
+        // obstacle's center can be anywhere from -width/2 to
+        // canvas.width + width/2 which means it may overlap the wall by up to
+        // half of its width but will never be completely outside the canvas.
+        const minX = -this.width / 2;
+        const maxX = this.canvas.width + this.width / 2;
+        return minX + Math.random() * (maxX - minX);
     }
 
     updateAll(cars) {

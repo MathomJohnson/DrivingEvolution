@@ -28,7 +28,7 @@ export class Car {
         // Initialize rays
         this.numRays = 7;
         this.raySpread = Math.PI / 2; // 90 degrees field of view
-        this.rayLength = 200;
+        this.rayLength = 250;
         this.rays = [];
 
         // Create rays with initial angles
