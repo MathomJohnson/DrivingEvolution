@@ -5,7 +5,7 @@ export class NeuralNetwork {
      * @param {number[]} hiddenSizes Array specifying the neuron count for each hidden layer.
      * @param {number} outputSize Number of output neurons.
      */
-    constructor(inputSize = 7, hiddenSizes = [10, 5], outputSize = 1) {
+    constructor(inputSize = 8, hiddenSizes = [10, 5], outputSize = 1) {
         this.inputSize = inputSize;
         this.hiddenSizes = hiddenSizes;
         this.outputSize = outputSize;

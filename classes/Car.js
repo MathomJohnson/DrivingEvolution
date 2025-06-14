@@ -73,8 +73,10 @@ export class Car {
         // 2. Cast rays and compute intersections
         this.updateRays(obstacles);
 
-        // 3. Normalize ray distances and feed into NN
+        // 3. Normalize ray distances and current angle, then feed into NN
         const inputs = this.rays.map(ray => 1 - ray.distance / ray.maxLength); // values in [0,1]
+        // Normalize angle from [-π/2, π/2] to [0,1]
+        inputs.push((this.angle + Math.PI / 2) / Math.PI);
 
         // 4. Predict steering using NN
         const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
