@@ -17,10 +17,10 @@ initRoadLines(canvas.height);
 
 // Define constants
 const SPEED = 1;
-const NUM_OBSTACLES = 8;
+const NUM_OBSTACLES = 11;
 const POPULATION_SIZE = 30;
 const PARENT_COUNT = 10;
-const MUTATION_RATE = 0.1;
+const MUTATION_RATE = 0.2;
 
 const simManager = new SimulationManager(canvas, new ObstacleManager(canvas, NUM_OBSTACLES, SPEED), 
   POPULATION_SIZE, PARENT_COUNT, SPEED, MUTATION_RATE);
