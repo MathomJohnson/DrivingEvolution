@@ -11,6 +11,9 @@ export class Car {
 
         this.canvasWidth = canvasWidth;
 
+        // Penalty multiplier applied when the car strays from the road center
+        this.centerPenaltyMultiplier = 0.8; // Math.random() * 0.5 + 0.5;
+
         // Current angle of the car, affects how quickly the car shifts left or right
         this.angle = 0;
         // Maximum angle change per update
@@ -19,7 +22,7 @@ export class Car {
         this.speed = speed;
         // Whether the car has hit an obstacle or not
         this.alive = true;
-        // How far the car has traveled
+        // Fitness value used for evolution (includes penalties)
         this.fitness = 0;
 
         // Initialize rays
@@ -82,8 +85,14 @@ export class Car {
         this.angle = Math.max(-Math.PI/2, Math.min(Math.PI/2, newAngle));
         this.x += Math.sin(this.angle) * this.speed;
 
-        // 6. Accumulate fitness (e.g., distance traveled)
+        // 6. Update fitness (distance traveled) and apply penalty for
+        // drifting away from the road center
         this.fitness += this.speed;
+
+        const centerX = this.canvasWidth / 2;
+        const distanceFromCenter = Math.abs(this.x - centerX);
+        const normalized = distanceFromCenter / centerX; // 0 at center, 1 at edge
+        this.fitness -= normalized * this.centerPenaltyMultiplier * this.speed;
     }
   
     /**
@@ -101,6 +110,32 @@ export class Car {
         for (const ray of this.rays) {
             ray.draw(ctx);
         }
+
+        // Draw fitness score above car (in world space, before transformations)
+        ctx.save();
+        ctx.font = "12px monospace";
+        const fitnessText = Math.floor(this.fitness).toString();
+        const textWidth = ctx.measureText(fitnessText).width;
+        
+        // Draw background rectangle for better readability
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(
+            this.x - textWidth/2 - 2,  // x
+            this.y - this.height/2 - 20,  // y (above car)
+            textWidth + 4,  // width
+            16  // height
+        );
+        
+        // Draw fitness text
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+            fitnessText,
+            this.x,
+            this.y - this.height/2 - 12
+        );
+        ctx.restore();
 
         // Save the current canvas state before transformations
         ctx.save();
@@ -134,6 +169,7 @@ export class Car {
             this.canvasWidth,
             this.speed
         );
+        // clone.centerPenaltyMultiplier = this.centerPenaltyMultiplier;
         clone.alive = true;
         //console.log("Cloning brain");
         clone.brain = this.brain.clone();
