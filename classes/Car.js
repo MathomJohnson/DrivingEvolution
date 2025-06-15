@@ -12,7 +12,7 @@ export class Car {
         this.canvasWidth = canvasWidth;
 
         // Penalty multiplier applied when the car strays from the road center
-        this.centerPenaltyMultiplier = 0.5; // Math.random() * 0.5 + 0.5;
+        this.centerPenaltyMultiplier = 0.2; // Math.random() * 0.5 + 0.5;
         // Penalty multiplier when the forward ray detects a nearby obstacle
         this.proximityPenaltyMultiplier = 1;
 
@@ -193,7 +193,9 @@ export class Car {
     getAdaptiveMutationRate() {
         const baseRate = 0.3;
         const decayFactor = 0.95;
-        return baseRate * Math.pow(decayFactor, this.generation - 1);
+        const decayRate = max(0.1, baseRate * Math.pow(decayFactor, this.generation - 1));
+        console.log(`Mutation decay rate: ${decayRate.toFixed(4)} (gen ${this.generation})`);
+        return decayRate;
     }
 }
   

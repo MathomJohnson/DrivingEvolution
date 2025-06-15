@@ -173,7 +173,6 @@ export class SimulationManager {
         this.distanceTraveled = 0;
         this.generation++;
 
-        
         // Reset obstacles to prevent spawn killing
         this.obstacleManager.reset();
     }
