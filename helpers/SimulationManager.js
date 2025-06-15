@@ -1,4 +1,5 @@
 import { Car } from "../classes/Car.js";
+import { NeuralNetwork } from "../classes/NeuralNetwork.js";
 
 export class SimulationManager {
     constructor(canvas, obstacleManager, populationSize, eliteCount, speed, mutationRate) {
@@ -26,10 +27,11 @@ export class SimulationManager {
         for (let i = 0; i < this.populationSize; i++) {
             this.cars.push(new Car(
                 this.canvas.width / 2,  // x
-                this.CAR_WIDTH,         // width           
+                this.CAR_WIDTH,         // width
                 this.CAR_HEIGHT,        // height
                 this.canvas.width,      // canvasWidth
-                this.speed              // speed
+                this.speed,             // speed
+                this.generation         // generation
             ));
         }
     }
@@ -128,40 +130,40 @@ export class SimulationManager {
     evolveNextGeneration() {
         this.cars.sort((a, b) => b.fitness - a.fitness); // sort by fitness
         const elites = this.cars.slice(0, this.eliteCount); // get best cars
-        
+
         // Print the best car's neural network
         console.log(`\n=== Best Car from Generation ${this.generation} ===`);
         console.log(`Fitness: ${Math.floor(elites[0].fitness)}`);
         console.log(`Distance: ${Math.floor(this.distanceTraveled)}`);
         elites[0].brain.printNetwork();
-        
+
         const newCars = [];
+        const nextGen = this.generation + 1;
 
-        // Add unmutated elites
+        // Carry over elites without mutation
         for (const elite of elites) {
-            const clonedCar = elite.clone();
-            newCars.push(clonedCar);
+            const clone = elite.clone();
+            clone.generation = nextGen;
+            newCars.push(clone);
         }
 
-        // Add mutated children of elites
-        const childrenPerElite = Math.floor((this.populationSize - this.eliteCount) / this.eliteCount);
-        for (const elite of elites) {
-            for (let i = 0; i < childrenPerElite; i++) {
-                const child = elite.clone();
-                child.brain.mutate(this.mutationRate);
-                newCars.push(child);
-            }
-        }
-
-        // Fill any remaining slots with new random cars
+        // Create rest of population using crossover and adaptive mutation
         while (newCars.length < this.populationSize) {
-            newCars.push(new Car(
+            const parentA = elites[Math.floor(Math.random() * elites.length)];
+            const parentB = elites[Math.floor(Math.random() * elites.length)];
+
+            const childBrain = NeuralNetwork.crossover(parentA.brain, parentB.brain);
+            const child = new Car(
                 this.canvas.width / 2,
                 this.CAR_WIDTH,
                 this.CAR_HEIGHT,
                 this.canvas.width,
-                this.speed
-            ));
+                this.speed,
+                nextGen
+            );
+            child.brain = childBrain;
+            child.brain.mutate(child.getAdaptiveMutationRate());
+            newCars.push(child);
         }
 
         // Reset for new generation

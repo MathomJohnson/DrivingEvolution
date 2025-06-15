@@ -93,6 +93,29 @@ export class NeuralNetwork {
     }
 
     /**
+     * Creates a new neural network by averaging the weights and biases
+     * of the two parent networks.
+     * @param {NeuralNetwork} a Parent A
+     * @param {NeuralNetwork} b Parent B
+     * @returns {NeuralNetwork} Child network resulting from crossover
+     */
+    static crossover(a, b) {
+        if (a.layerSizes.join(',') !== b.layerSizes.join(',')) {
+            throw new Error('Networks must share architecture for crossover');
+        }
+        const child = a.clone();
+        child.weights = child.weights.map((layer, i) =>
+            layer.map((row, j) =>
+                row.map((_, k) => (a.weights[i][j][k] + b.weights[i][j][k]) / 2)
+            )
+        );
+        child.biases = child.biases.map((layer, i) =>
+            layer.map((_, j) => (a.biases[i][j] + b.biases[i][j]) / 2)
+        );
+        return child;
+    }
+
+    /**
      * Prints the neural network structure to the console in a readable format.
      */
     printNetwork() {
