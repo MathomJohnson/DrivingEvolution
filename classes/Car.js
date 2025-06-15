@@ -2,7 +2,7 @@ import { Ray } from './Ray.js';
 import { NeuralNetwork } from './NeuralNetwork.js';
 
 export class Car {
-    constructor(x, width, height, canvasWidth, speed) {
+    constructor(x, width, height, canvasWidth, speed, generation = 1) {
         this.x = x;
         this.y = 800 * 0.8;  // Will be set in draw() based on canvas height
         // Width and height of the car
@@ -12,7 +12,7 @@ export class Car {
         this.canvasWidth = canvasWidth;
 
         // Penalty multiplier applied when the car strays from the road center
-        this.centerPenaltyMultiplier = 0.5; // Math.random() * 0.5 + 0.5;
+        this.centerPenaltyMultiplier = 0.2; // Math.random() * 0.5 + 0.5;
         // Penalty multiplier when the forward ray detects a nearby obstacle
         this.proximityPenaltyMultiplier = 1;
 
@@ -22,6 +22,7 @@ export class Car {
         this.maxSteer = 0.02;
         // Affects how quickly the car shifts left or right along with angle
         this.speed = speed;
+        this.generation = generation;
         // Whether the car has hit an obstacle or not
         this.alive = true;
         // Fitness value used for evolution (includes penalties)
@@ -179,7 +180,8 @@ export class Car {
             this.width,
             this.height,
             this.canvasWidth,
-            this.speed
+            this.speed,
+            this.generation
         );
         clone.alive = true;
         clone.brain = this.brain.clone();
@@ -191,7 +193,9 @@ export class Car {
     getAdaptiveMutationRate() {
         const baseRate = 0.3;
         const decayFactor = 0.95;
-        return baseRate * Math.pow(decayFactor, this.generation - 1);
+        const decayRate = max(0.1, baseRate * Math.pow(decayFactor, this.generation - 1));
+        console.log(`Mutation decay rate: ${decayRate.toFixed(4)} (gen ${this.generation})`);
+        return decayRate;
     }
 }
   

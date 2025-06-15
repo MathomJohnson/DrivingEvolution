@@ -17,8 +17,8 @@ initRoadLines(canvas.height);
 
 // Define constants
 const SPEED = 1;
-const NUM_OBSTACLES = 8;
-const POPULATION_SIZE = 60;
+const NUM_OBSTACLES = 10;
+const POPULATION_SIZE = 75;
 const PARENT_COUNT = 10;
 const MUTATION_RATE = 0.2;
 
