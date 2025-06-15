@@ -12,7 +12,9 @@ export class Car {
         this.canvasWidth = canvasWidth;
 
         // Penalty multiplier applied when the car strays from the road center
-        this.centerPenaltyMultiplier = 0.8; // Math.random() * 0.5 + 0.5;
+        this.centerPenaltyMultiplier = 0.5; // Math.random() * 0.5 + 0.5;
+        // Penalty multiplier when the forward ray detects a nearby obstacle
+        this.proximityPenaltyMultiplier = 1;
 
         // Current angle of the car, affects how quickly the car shifts left or right
         this.angle = 0;
@@ -73,8 +75,10 @@ export class Car {
         // 2. Cast rays and compute intersections
         this.updateRays(obstacles);
 
-        // 3. Normalize ray distances and feed into NN
+        // 3. Normalize ray distances and current angle, then feed into NN
         const inputs = this.rays.map(ray => 1 - ray.distance / ray.maxLength); // values in [0,1]
+        // Normalize angle from [-π/2, π/2] to [0,1]
+        inputs.push((this.angle + Math.PI / 2) / Math.PI);
 
         // 4. Predict steering using NN
         const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
@@ -93,6 +97,14 @@ export class Car {
         const distanceFromCenter = Math.abs(this.x - centerX);
         const normalized = distanceFromCenter / centerX; // 0 at center, 1 at edge
         this.fitness -= normalized * this.centerPenaltyMultiplier * this.speed;
+
+        // Penalize if the forward-facing ray detects an obstacle too close
+        const middleIndex = Math.floor(this.rays.length / 2);
+        const middleRay = this.rays[middleIndex];
+        if (middleRay.distance < this.rayLength * 0.75) {
+            const penalty = this.proximityPenaltyMultiplier * this.speed;
+            this.fitness -= penalty;
+        }
     }
   
     /**
@@ -169,13 +181,17 @@ export class Car {
             this.canvasWidth,
             this.speed
         );
-        // clone.centerPenaltyMultiplier = this.centerPenaltyMultiplier;
         clone.alive = true;
-        //console.log("Cloning brain");
         clone.brain = this.brain.clone();
         clone.angle = 0; // Reset angle for new generation
         clone.fitness = 0; // Reset fitness for new generation
         return clone;
+    }
+
+    getAdaptiveMutationRate() {
+        const baseRate = 0.3;
+        const decayFactor = 0.95;
+        return baseRate * Math.pow(decayFactor, this.generation - 1);
     }
 }
   
