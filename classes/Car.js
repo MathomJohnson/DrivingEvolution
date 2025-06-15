@@ -187,12 +187,7 @@ export class Car {
         clone.fitness = 0; // Reset fitness for new generation
         return clone;
     }
-
-    getAdaptiveMutationRate() {
-        const baseRate = 0.3;
-        const decayFactor = 0.95;
-        return baseRate * Math.pow(decayFactor, this.generation - 1);
-    }
+    
 }
   
   
