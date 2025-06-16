@@ -77,9 +77,29 @@ export class Car {
         this.updateRays(obstacles);
 
         // 3. Normalize ray distances and current angle, then feed into NN
-        const inputs = this.rays.map(ray => 1 - ray.distance / ray.maxLength); // values in [0,1]
-        // Normalize angle from [-π/2, π/2] to [0,1]
-        inputs.push((this.angle + Math.PI / 2) / Math.PI);
+        // const inputs = this.rays.map(ray => 1 - ray.distance / ray.maxLength); // values in [0,1]
+        // // Normalize angle from [-π/2, π/2] to [0,1]
+        // //inputs.push((this.angle + Math.PI / 2) / Math.PI);
+        // // Add a binary input indicating if the middle ray hit an obstacle
+        // const midRay = this.rays[Math.floor(this.rays.length / 2)];
+        // const leftRay = this.rays[Math.floor(this.rays.length / 2) - 1];
+        // const rightRay = this.rays[Math.floor(this.rays.length / 2) + 1];
+        // inputs.push((midRay.hitPoint || midRay.distance < midRay.maxLength) ? 1 : 0);
+        // inputs.push((leftRay.hitPoint || leftRay.distance < leftRay.maxLength) ? 1 : 0);
+        // inputs.push((rightRay.hitPoint || rightRay.distance < rightRay.maxLength) ? 1 : 0);
+
+        // 3. Normalize ray distances and add hit flags for each ray
+        const inputs = [];
+        
+        // Add normalized distances for each ray
+        // for (const ray of this.rays) {
+        //     inputs.push(1 - ray.distance / ray.maxLength); // values in [0,1]
+        // }
+
+        // Add hit flags for each ray (1 if hit, 0 if not)
+        for (const ray of this.rays) {
+            inputs.push((ray.hitPoint || ray.distance < ray.maxLength) ? 1 : 0);
+        }
 
         // 4. Predict steering using NN
         const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
