@@ -2,13 +2,14 @@ import { Car } from "../classes/Car.js";
 import { NeuralNetwork } from "../classes/NeuralNetwork.js";
 
 export class SimulationManager {
-    constructor(canvas, obstacleManager, populationSize, eliteCount, speed, mutationRate) {
+    constructor(canvas, obstacleManager, populationSize, eliteCount, speed, mutationRate, onGenerationComplete = () => {}) {
         this.canvas = canvas;
         this.obstacleManager = obstacleManager;
         this.populationSize = populationSize;
         this.eliteCount = eliteCount;
         this.speed = speed;
         this.mutationRate = mutationRate;
+        this.onGenerationComplete = onGenerationComplete;
 
         this.generation = 1; // keep track of generations
         this.CAR_WIDTH = 30;
@@ -136,6 +137,10 @@ export class SimulationManager {
         console.log(`Fitness: ${Math.floor(elites[0].fitness)}`);
         console.log(`Distance: ${Math.floor(this.distanceTraveled)}`);
         elites[0].brain.printNetwork();
+
+        if (this.onGenerationComplete) {
+            this.onGenerationComplete(this.generation, this.distanceTraveled);
+        }
 
         const newCars = [];
         const nextGen = this.generation + 1;
