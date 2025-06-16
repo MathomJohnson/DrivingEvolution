@@ -1,9 +1,16 @@
+
 body {
-    margin: 0;
-    background: #111;
-    overflow: hidden;
-    position: relative;
-  }
+  margin: 0;
+  background: #111;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+#game-container {
+  position: relative;
+  width: fit-content;
+}
   
   canvas {
     display: block;
@@ -20,7 +27,7 @@ body {
 }
 
 #stats-modal {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
