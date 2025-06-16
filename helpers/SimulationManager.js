@@ -20,6 +20,13 @@ export class SimulationManager {
         this.distanceTraveled = 0; // Total distance traveled this generation
         this.isEvolving = false; // Flag for generation transition delay
 
+        // Memory queue for storing past successful cars
+        this.memoryQueue = [];
+        this.memoryQueueCapacity = 50;
+        this.memoryQueueAddChance = 0.1; // 10% chance to add a dead car to memory
+        this.memoryQueueSelectionCount = 20; // Number of cars to select from memory
+        this.processedCars = new Set(); // Track which cars have been processed for memory
+
         this.spawnInitialPopulation();
     }
 
@@ -42,13 +49,17 @@ export class SimulationManager {
 
         // update obstacles
         this.obstacleManager.updateAll(this.getAliveCars());
-        this.obstacleManager.drawAll(this.canvas.getContext("2d")); // simplify later, ctx should be passed in
+        this.obstacleManager.drawAll(this.canvas.getContext("2d"));
 
         // Update living cars and track max fitness
         for (const car of this.cars) {
             if (car.alive) {
                 car.update(this.obstacleManager.getObstacles());
                 this.maxFitness = Math.max(this.maxFitness, car.fitness);
+            } else if (!this.processedCars.has(car) && Math.random() < this.memoryQueueAddChance) {
+                // Add car to memory queue with 10% chance when it dies
+                this.addToMemoryQueue(car);
+                this.processedCars.add(car); // Mark as processed to avoid duplicate entries
             }
         }
 
@@ -127,6 +138,20 @@ export class SimulationManager {
         ctx.restore();
     }
 
+    /**
+     * Adds a car to the memory queue, maintaining the queue's capacity
+     * @param {Car} car - The car to add to the memory queue
+     */
+    addToMemoryQueue(car) {
+        // Add the car to the queue
+        this.memoryQueue.push(car.clone());
+        
+        // If queue exceeds capacity, remove the oldest car
+        if (this.memoryQueue.length > this.memoryQueueCapacity) {
+            this.memoryQueue.shift();
+        }
+    }
+
     evolveNextGeneration() {
         this.cars.sort((a, b) => b.fitness - a.fitness); // sort by fitness
         const elites = this.cars.slice(0, this.eliteCount); // get best cars
@@ -140,30 +165,37 @@ export class SimulationManager {
         const newCars = [];
         const nextGen = this.generation + 1;
 
-        // Carry over elites without mutation
+        // Step 1: Carry over elites without mutation
         for (const elite of elites) {
             const clone = elite.clone();
             clone.generation = nextGen;
             newCars.push(clone);
         }
 
-        // Create rest of population using crossover and adaptive mutation
-        while (newCars.length < this.populationSize) {
-            const parentA = elites[Math.floor(Math.random() * elites.length)];
-            const parentB = elites[Math.floor(Math.random() * elites.length)];
+        // Step 2: Select and mutate cars from memory queue
+        if (this.memoryQueue.length > 0) {
+            // Randomly select cars from memory queue
+            const selectedCount = Math.min(this.memoryQueueSelectionCount, this.memoryQueue.length);
+            for (let i = 0; i < selectedCount; i++) {
+                // Pick a random car from the memory queue
+                const randomIndex = Math.floor(Math.random() * this.memoryQueue.length);
+                const selectedCar = this.memoryQueue[randomIndex];
+                
+                // Create mutated version of selected car
+                const clone = selectedCar.clone();
+                clone.brain.mutate(clone.getAdaptiveMutationRate());
+                clone.generation = nextGen;
+                newCars.push(clone);
+            }
+        }
 
-            const childBrain = NeuralNetwork.crossover(parentA.brain, parentB.brain);
-            const child = new Car(
-                this.canvas.width / 2,
-                this.CAR_WIDTH,
-                this.CAR_HEIGHT,
-                this.canvas.width,
-                this.speed,
-                nextGen
-            );
-            child.brain = childBrain;
-            child.brain.mutate(child.getAdaptiveMutationRate());
-            newCars.push(child);
+        // Step 3: Add mutations of elite cars to fill remaining population
+        while (newCars.length < this.populationSize) {
+            const parent = elites[Math.floor(Math.random() * elites.length)];
+            const clone = parent.clone();
+            clone.brain.mutate(clone.getAdaptiveMutationRate());
+            clone.generation = nextGen;
+            newCars.push(clone);
         }
 
         // Reset for new generation
@@ -172,6 +204,7 @@ export class SimulationManager {
         this.maxFitness = 0;
         this.distanceTraveled = 0;
         this.generation++;
+        this.processedCars.clear(); // Clear the set of processed cars for the new generation
 
         // Reset obstacles to prevent spawn killing
         this.obstacleManager.reset();

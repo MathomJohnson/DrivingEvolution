@@ -83,6 +83,7 @@ export class NeuralNetwork {
      * @param {number} rate - Mutation probability (e.g. 0.1 for 10% chance per value)
      */
     mutate(rate) {
+        // Mutation adds a random value between -0.08 and +0.08 to each weight/bias
         const mutateValue = v =>
             Math.random() < rate ? v + (Math.random() * 2 - 1) * 0.08 : v;
 
