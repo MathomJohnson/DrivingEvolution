@@ -20,6 +20,9 @@ export class SimulationManager {
         this.distanceTraveled = 0; // Total distance traveled this generation
         this.isEvolving = false; // Flag for generation transition delay
 
+        // Track generation statistics
+        this.generationStats = []; // Array of {generation, bestFitness, distanceTraveled}
+
         this.spawnInitialPopulation();
     }
 
@@ -137,6 +140,13 @@ export class SimulationManager {
         console.log(`Distance: ${Math.floor(this.distanceTraveled)}`);
         elites[0].brain.printNetwork();
 
+        // Track generation statistics before resetting
+        this.generationStats.push({
+            generation: this.generation,
+            bestFitness: Math.floor(this.maxFitness),
+            distanceTraveled: Math.floor(this.distanceTraveled)
+        });
+
         const newCars = [];
         const nextGen = this.generation + 1;
 
@@ -183,5 +193,13 @@ export class SimulationManager {
 
     getAllCars() {
         return this.cars;
+    }
+
+    /**
+     * Returns the generation statistics for graphing
+     * @returns {Array} Array of generation data objects
+     */
+    getGenerationStats() {
+        return this.generationStats;
     }
 }

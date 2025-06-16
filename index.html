@@ -7,6 +7,23 @@
 </head>
 <body>
   <canvas id="canvas"></canvas>
+  
+  <!-- Statistics Button -->
+  <button id="statsButton" class="stats-button">📊 Stats</button>
+  
+  <!-- Statistics Modal -->
+  <div id="statsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Generation Statistics</h2>
+        <button id="closeModal" class="close-button">&times;</button>
+      </div>
+      <div class="modal-body">
+        <canvas id="graphCanvas" width="600" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+  
   <script type="module" src="main.js"></script>
 </body>
 </html>

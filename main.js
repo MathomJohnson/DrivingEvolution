@@ -1,4 +1,5 @@
 import { SimulationManager } from './helpers/SimulationManager.js';
+import { StatisticsManager } from './helpers/StatisticsManager.js';
 import {
     initRoadLines,
     updateRoadLines,
@@ -17,13 +18,16 @@ initRoadLines(canvas.height);
 
 // Define constants
 const SPEED = 1;
-const NUM_OBSTACLES = 10;
-const POPULATION_SIZE = 75;
+const NUM_OBSTACLES = 8;
+const POPULATION_SIZE = 60;
 const PARENT_COUNT = 10;
 const MUTATION_RATE = 0.2;
 
 const simManager = new SimulationManager(canvas, new ObstacleManager(canvas, NUM_OBSTACLES, SPEED), 
   POPULATION_SIZE, PARENT_COUNT, SPEED, MUTATION_RATE);
+
+// Initialize statistics manager
+const statsManager = new StatisticsManager(simManager);
 
 // Animation loop
 function animate() {
