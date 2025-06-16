@@ -12,9 +12,9 @@ export class Car {
         this.canvasWidth = canvasWidth;
 
         // Penalty multiplier applied when the car strays from the road center
-        this.centerPenaltyMultiplier = 0.2; // Math.random() * 0.5 + 0.5;
+        this.centerPenaltyMultiplier = 0.1; // Math.random() * 0.5 + 0.5;
         // Penalty multiplier when the forward ray detects a nearby obstacle
-        this.proximityPenaltyMultiplier = 1;
+        this.proximityPenaltyMultiplier = 0.8;
 
         // Current angle of the car, affects how quickly the car shifts left or right
         this.angle = 0;
@@ -76,10 +76,28 @@ export class Car {
         // 2. Cast rays and compute intersections
         this.updateRays(obstacles);
 
-        // 3. Normalize ray distances and current angle, then feed into NN
-        const inputs = this.rays.map(ray => 1 - ray.distance / ray.maxLength); // values in [0,1]
-        // Normalize angle from [-π/2, π/2] to [0,1]
-        inputs.push((this.angle + Math.PI / 2) / Math.PI);
+        // 3. Normalize ray distances and add hit flags for each ray
+        const inputs = this.rays.map(ray => {
+            if (ray.hitPoint === null) {
+                return 0; // No obstacle detected
+            } else {
+                // 1.0 = obstacle at max distance, 2.0 = obstacle touching car
+                return 1.0 + (1.0 - ray.distance / ray.maxLength);
+            }
+        });
+
+        // const inputs = this.rays.map(ray => {
+        //     if (ray.hitPoint === null) {
+        //         return 0;
+        //     } else {
+        //         const normalizedDistance = ray.distance / ray.maxLength;
+        //         // Returns: min=1.0 (when obstacle at max distance), max=4.48 (when obstacle touches car)
+        //         return Math.exp(1.5 * (1 - normalizedDistance));
+        //     }
+        // });
+
+        // Normalize angle from [-π/2, π/2] to [-1, 1]
+        //inputs.push(2 * (this.angle / Math.PI));
 
         // 4. Predict steering using NN
         const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
@@ -192,7 +210,7 @@ export class Car {
 
     getAdaptiveMutationRate() {
         const baseRate = 0.3;
-        const decayFactor = 0.95;
+        const decayFactor = 0.9;
         const decayRate = Math.max(0.1, baseRate * Math.pow(decayFactor, this.generation - 1));
         console.log(`Mutation decay rate: ${decayRate.toFixed(4)} (gen ${this.generation})`);
         return decayRate;

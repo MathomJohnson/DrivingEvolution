@@ -5,7 +5,7 @@ export class NeuralNetwork {
      * @param {number[]} hiddenSizes Array specifying the neuron count for each hidden layer.
      * @param {number} outputSize Number of output neurons.
      */
-    constructor(inputSize = 8, hiddenSizes = [10, 5], outputSize = 1) {
+    constructor(inputSize = 7, hiddenSizes = [10, 5], outputSize = 1) {
         this.inputSize = inputSize;
         this.hiddenSizes = hiddenSizes;
         this.outputSize = outputSize;
@@ -83,6 +83,7 @@ export class NeuralNetwork {
      * @param {number} rate - Mutation probability (e.g. 0.1 for 10% chance per value)
      */
     mutate(rate) {
+        // Mutation adds a random value between -0.08 and +0.08 to each weight/bias
         const mutateValue = v =>
             Math.random() < rate ? v + (Math.random() * 2 - 1) * 0.08 : v;
 
