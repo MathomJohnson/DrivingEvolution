@@ -37,9 +37,11 @@ export class SimulationManager {
         for (let i = 0; i < this.populationSize; i++) {
             this.cars.push(new Car(
                 this.canvas.width / 2,  // x
+                this.canvas.height / 2, // y
                 this.CAR_WIDTH,         // width
                 this.CAR_HEIGHT,        // height
                 this.canvas.width,      // canvasWidth
+                this.canvas.height,     // canvasHeight
                 this.speed,             // speed
                 this.generation         // generation
             ));
@@ -68,7 +70,7 @@ export class SimulationManager {
 
         // Increment overall distance if at least one car is alive
         if (this.cars.some(car => car.alive)) {
-            this.distanceTraveled += this.speed;
+            this.distanceTraveled += 1;
         }
 
         // Check if all cars are dead

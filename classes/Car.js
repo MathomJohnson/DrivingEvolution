@@ -2,17 +2,15 @@ import { Ray } from './Ray.js';
 import { NeuralNetwork } from './NeuralNetwork.js';
 
 export class Car {
-    constructor(x, width, height, canvasWidth, speed, generation = 1) {
+    constructor(x, y, width, height, canvasWidth, canvasHeight, speed, generation = 1) {
         this.x = x;
-        this.y = 800 * 0.8;  // Will be set in draw() based on canvas height
+        this.y = y;
         // Width and height of the car
         this.width = width;
         this.height = height;
 
         this.canvasWidth = canvasWidth;
-
-        // Penalty multiplier applied when the car strays from the road center
-        this.centerPenaltyMultiplier = 0.1; // Math.random() * 0.5 + 0.5;
+        this.canvasHeight = canvasHeight;
         // Penalty multiplier when the forward ray detects a nearby obstacle
         this.proximityPenaltyMultiplier = 0.8;
 
@@ -20,7 +18,7 @@ export class Car {
         this.angle = 0;
         // Maximum angle change per update
         this.maxSteer = 0.02;
-        // Affects how quickly the car shifts left or right along with angle
+        // Affects how quickly the car moves along with angle
         this.speed = speed;
         this.generation = generation;
         // Whether the car has hit an obstacle or not
@@ -102,20 +100,26 @@ export class Car {
         // 4. Predict steering using NN
         const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
 
-        // 5. Update car angle and position, with clamping
-        const newAngle = this.angle + steerDelta;
-        // Clamp angle between -π/2 and π/2 (90 degrees)
-        this.angle = Math.max(-Math.PI/2, Math.min(Math.PI/2, newAngle));
+        // 5. Update car angle and position
+        this.angle += steerDelta;
+        if (this.angle > Math.PI) this.angle -= 2 * Math.PI;
+        if (this.angle < -Math.PI) this.angle += 2 * Math.PI;
+
         this.x += Math.sin(this.angle) * this.speed;
+        this.y -= Math.cos(this.angle) * this.speed;
 
-        // 6. Update fitness (distance traveled) and apply penalty for
-        // drifting away from the road center
-        this.fitness += this.speed;
+        // Keep within bounds
+        if (
+            this.x - this.width / 2 < 0 ||
+            this.x + this.width / 2 > this.canvasWidth ||
+            this.y - this.height / 2 < 0 ||
+            this.y + this.height / 2 > this.canvasHeight
+        ) {
+            this.alive = false;
+        }
 
-        const centerX = this.canvasWidth / 2;
-        const distanceFromCenter = Math.abs(this.x - centerX);
-        const normalized = distanceFromCenter / centerX; // 0 at center, 1 at edge
-        this.fitness -= normalized * this.centerPenaltyMultiplier * this.speed;
+        // 6. Update fitness (time survived)
+        this.fitness += 1;
 
         // Penalize if the forward-facing ray detects an obstacle too close
         const middleIndex = Math.floor(this.rays.length / 2);
@@ -134,8 +138,6 @@ export class Car {
      */
     draw(ctx) {
         if (!this.alive) return;
-
-        this.y = ctx.canvas.height * 0.8; // Update the stored y position
 
         // Draw rays first (in world space, before car transformations)
         for (const ray of this.rays) {
@@ -195,9 +197,11 @@ export class Car {
     clone() {
         const clone = new Car(
             this.canvasWidth / 2,
+            this.canvasHeight / 2,
             this.width,
             this.height,
             this.canvasWidth,
+            this.canvasHeight,
             this.speed,
             this.generation
         );

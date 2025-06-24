@@ -1,14 +1,16 @@
 export class Obstacle {
-    constructor(x, y, width, height, speed) {
+    constructor(x, y, width, height, vx = 0, vy = 0) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.speed = speed; // downward speed
+        this.vx = vx;
+        this.vy = vy;
     }
-  
+
     update() {
-        this.y += this.speed;
+        this.x += this.vx;
+        this.y += this.vy;
     }
   
     draw(ctx) {
