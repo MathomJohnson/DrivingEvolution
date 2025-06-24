@@ -50,9 +50,6 @@ export class SimulationManager {
         // Skip updates during evolution or delay
         if (this.isEvolving) return;
 
-        // update obstacles
-        this.obstacleManager.updateAll(this.getAliveCars());
-        this.obstacleManager.drawAll(this.canvas.getContext("2d"));
 
         // Update living cars and track max fitness
         for (const car of this.cars) {
@@ -65,6 +62,9 @@ export class SimulationManager {
                 this.processedCars.add(car); // Mark as processed to avoid duplicate entries
             }
         }
+
+        // After updating cars, update obstacles and handle collisions
+        this.obstacleManager.updateAll(this.getAliveCars());
 
         // Increment overall distance if at least one car is alive
         if (this.cars.some(car => car.alive)) {
@@ -84,6 +84,9 @@ export class SimulationManager {
     }
 
     draw(ctx) {
+        // Draw obstacles first so cars appear on top
+        this.obstacleManager.drawAll(ctx);
+
         // Draw all alive cars
         for (const car of this.cars) {
             if (car.alive) {
