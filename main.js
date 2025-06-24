@@ -5,7 +5,8 @@ import { ObstacleManager } from './helpers/ObstacleManager.js';
 
 // Get canvas and context
 const canvas = document.getElementById("canvas");
-canvas.width = 600;
+// Make the arena a slightly larger square
+canvas.width = 800;
 canvas.height = 800;
 const ctx = canvas.getContext("2d");
 

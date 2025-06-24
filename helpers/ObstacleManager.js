@@ -4,8 +4,9 @@ export class ObstacleManager {
     constructor(canvas, obstacleCount = 5) {
         this.canvas = canvas;
         this.count = obstacleCount;
+        // Use square obstacles inside the arena
         this.width = 40;
-        this.height = 15;
+        this.height = 40;
         this.obstacles = [];
 
         this.initializeObstacles();
