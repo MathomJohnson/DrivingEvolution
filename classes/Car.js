@@ -16,11 +16,7 @@ export class Car {
         // Penalty multiplier when the forward ray detects a nearby obstacle
         this.proximityPenaltyMultiplier = 0.8;
 
-        // Current angle of the car, affects how quickly the car shifts left or right
-        this.angle = 0;
-        // Maximum angle change per update
-        this.maxSteer = 0.02;
-        // Affects how quickly the car shifts left or right along with angle
+        // Horizontal movement speed of the car
         this.speed = speed;
         this.generation = generation;
         // Whether the car has hit an obstacle or not
@@ -46,8 +42,8 @@ export class Car {
     }
   
     /**
-     * Updates the rays based on the car's angle
-     * @param { Obstacle[] } obstacles 
+     * Updates the rays based on the car's current position
+     * @param { Obstacle[] } obstacles
      */
     updateRays(obstacles) {
         if (!this.y) return; // Skip if y position not set yet
@@ -58,22 +54,16 @@ export class Car {
     }
       
     /**
-     * Called by the animation loop in main.js
-     * Uses randomness to update the car's angle
-     * Updates the car's x position based on its current angle and speed
-     * Eliminates the car if it goes off-screen (left or right)
-     * @param { Obstacle[] } obstacles 
+     * Called by the animation loop in main.js.
+     * Uses the neural network output to move the car left or right.
+     * Eliminates the car if it collides with an obstacle.
+     * @param { Obstacle[] } obstacles
      * @returns None
      */
     update(obstacles) {
         if (!this.alive) return;
 
-        // 1. Update ray angles based on current car angle
-        for (const ray of this.rays) {
-            ray.angle = this.angle + ray.baseAngle;
-        }
-
-        // 2. Cast rays and compute intersections
+        // Cast rays and compute intersections
         this.updateRays(obstacles);
 
         // 3. Normalize ray distances and add hit flags for each ray
@@ -96,17 +86,10 @@ export class Car {
         //     }
         // });
 
-        // Normalize angle from [-π/2, π/2] to [-1, 1]
-        //inputs.push(2 * (this.angle / Math.PI));
 
-        // 4. Predict steering using NN
-        const steerDelta = this.brain.predict(inputs) * this.maxSteer; // output [-maxSteer, maxSteer]
-
-        // 5. Update car angle and position, with clamping
-        const newAngle = this.angle + steerDelta;
-        // Clamp angle between -π/2 and π/2 (90 degrees)
-        this.angle = Math.max(-Math.PI/2, Math.min(Math.PI/2, newAngle));
-        this.x += Math.sin(this.angle) * this.speed;
+        // Use neural network output to determine horizontal movement
+        const deltaX = this.brain.predict(inputs) * this.speed;
+        this.x += deltaX;
 
         // 6. Update fitness (distance traveled) and apply penalty for
         // drifting away from the road center
@@ -173,9 +156,6 @@ export class Car {
         
         // Move canvas origin to car's position
         ctx.translate(this.x, this.y);
-        
-        // Rotate canvas by car's current angle
-        ctx.rotate(this.angle);
 
         // Set car color
         ctx.fillStyle = "blue";
@@ -203,7 +183,6 @@ export class Car {
         );
         clone.alive = true;
         clone.brain = this.brain.clone();
-        clone.angle = 0; // Reset angle for new generation
         clone.fitness = 0; // Reset fitness for new generation
         return clone;
     }

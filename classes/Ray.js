@@ -2,8 +2,8 @@ export class Ray {
     constructor(originX, originY, baseAngle, maxLength = 200) {
       this.originX = originX;
       this.originY = originY;
-      this.baseAngle = baseAngle; // base angle relative to car's forward direction
-      this.angle = baseAngle; // current absolute angle (will be updated with car's angle)
+      this.baseAngle = baseAngle; // fixed angle relative to the forward direction
+      this.angle = baseAngle; // current absolute angle
       this.maxLength = maxLength;
   
       this.endX = originX;
