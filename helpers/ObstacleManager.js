@@ -5,8 +5,8 @@ export class ObstacleManager {
         this.canvas = canvas;
         this.count = obstacleCount;
         this.speed = speed;
-        this.width = 40;
-        this.height = 15;
+        this.width = 50;
+        this.height = 30;
         this.obstacles = [];
 
         this.initializeObstacles();

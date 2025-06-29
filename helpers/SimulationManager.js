@@ -12,7 +12,7 @@ export class SimulationManager {
 
         this.generation = 1; // keep track of generations
         this.CAR_WIDTH = 30;
-        this.CAR_HEIGHT = 60;
+        this.CAR_HEIGHT = 50;
 
         this.cars = [];
         this.deadCars = [];
@@ -161,8 +161,6 @@ export class SimulationManager {
 
         // Print the best car's neural network
         console.log(`\n=== Best Car from Generation ${this.generation} ===`);
-        console.log(`Fitness: ${Math.floor(elites[0].fitness)}`);
-        console.log(`Distance: ${Math.floor(this.distanceTraveled)}`);
         elites[0].brain.printNetwork();
 
         // Track generation statistics before resetting
@@ -193,7 +191,7 @@ export class SimulationManager {
                 
                 // Create mutated version of selected car
                 const clone = selectedCar.clone();
-                clone.brain.mutate(clone.getAdaptiveMutationRate());
+                clone.brain.mutate(this.mutationRate);
                 clone.generation = nextGen;
                 newCars.push(clone);
             }
@@ -203,10 +201,11 @@ export class SimulationManager {
         while (newCars.length < this.populationSize) {
             const parent = elites[Math.floor(Math.random() * elites.length)];
             const clone = parent.clone();
-            clone.brain.mutate(clone.getAdaptiveMutationRate());
+            clone.brain.mutate(this.mutationRate);
             clone.generation = nextGen;
             newCars.push(clone);
         }
+        console.log(`Mutation rate: ${this.mutationRate}`);
 
         // Reset for new generation
         this.cars = newCars;
