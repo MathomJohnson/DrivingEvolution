@@ -63,17 +63,16 @@ export class StatisticsManager {
 
         // Find data ranges
         const maxGeneration = Math.max(...stats.map(s => s.generation));
-        const maxDistance = Math.max(...stats.map(s => s.distanceTraveled));
-        const maxFitness = Math.max(...stats.map(s => s.bestFitness));
+        const maxAverageDistance = Math.max(...stats.map(s => s.averageDistance));
 
         // Draw grid
-        this.drawGrid(ctx, width, height, padding, maxGeneration, Math.max(maxDistance, maxFitness));
+        this.drawGrid(ctx, width, height, padding, maxGeneration, maxAverageDistance);
 
         // Draw axes
-        this.drawAxes(ctx, width, height, padding, maxGeneration, Math.max(maxDistance, maxFitness));
+        this.drawAxes(ctx, width, height, padding, maxGeneration, maxAverageDistance);
 
         // Draw data points and lines
-        this.drawDataLines(ctx, width, height, padding, stats, maxGeneration, Math.max(maxDistance, maxFitness));
+        this.drawDataLines(ctx, width, height, padding, stats, maxGeneration, maxAverageDistance);
 
         // Draw legend
         this.drawLegend(ctx, width, height);
@@ -163,7 +162,7 @@ export class StatisticsManager {
         ctx.save();
         ctx.translate(20, height / 2);
         ctx.rotate(-Math.PI / 2);
-        ctx.fillText('Distance / Fitness', 0, 0);
+        ctx.fillText('Average Distance', 0, 0);
         ctx.restore();
     }
 
@@ -178,25 +177,7 @@ export class StatisticsManager {
         for (let i = 0; i < stats.length; i++) {
             const stat = stats[i];
             const x = padding + (stat.generation / maxGen) * (width - 2 * padding);
-            const y = padding + ((maxValue - stat.distanceTraveled) / maxValue) * (height - 2 * padding);
-            
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-        ctx.stroke();
-
-        // Draw fitness line
-        ctx.strokeStyle = '#2196F3';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        
-        for (let i = 0; i < stats.length; i++) {
-            const stat = stats[i];
-            const x = padding + (stat.generation / maxGen) * (width - 2 * padding);
-            const y = padding + ((maxValue - stat.bestFitness) / maxValue) * (height - 2 * padding);
+            const y = padding + ((maxValue - stat.averageDistance) / maxValue) * (height - 2 * padding);
             
             if (i === 0) {
                 ctx.moveTo(x, y);
@@ -211,17 +192,10 @@ export class StatisticsManager {
             const x = padding + (stat.generation / maxGen) * (width - 2 * padding);
             
             // Distance point
-            const y1 = padding + ((maxValue - stat.distanceTraveled) / maxValue) * (height - 2 * padding);
+            const y = padding + ((maxValue - stat.averageDistance) / maxValue) * (height - 2 * padding);
             ctx.fillStyle = '#4CAF50';
             ctx.beginPath();
-            ctx.arc(x, y1, 4, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Fitness point
-            const y2 = padding + ((maxValue - stat.bestFitness) / maxValue) * (height - 2 * padding);
-            ctx.fillStyle = '#2196F3';
-            ctx.beginPath();
-            ctx.arc(x, y2, 4, 0, 2 * Math.PI);
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
             ctx.fill();
         }
     }
@@ -231,21 +205,15 @@ export class StatisticsManager {
         const legendY = 80;
         
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(legendX - 10, legendY - 10, 140, 60);
+        ctx.fillRect(legendX - 10, legendY - 10, 140, 30);
         
         ctx.font = '12px Arial';
         ctx.textAlign = 'left';
         
-        // Distance legend
+        // Average distance legend
         ctx.fillStyle = '#4CAF50';
         ctx.fillRect(legendX, legendY, 15, 3);
         ctx.fillStyle = '#fff';
-        ctx.fillText('Distance Traveled', legendX + 20, legendY + 8);
-        
-        // Fitness legend
-        ctx.fillStyle = '#2196F3';
-        ctx.fillRect(legendX, legendY + 20, 15, 3);
-        ctx.fillStyle = '#fff';
-        ctx.fillText('Best Fitness', legendX + 20, legendY + 28);
+        ctx.fillText('Average Distance', legendX + 20, legendY + 8);
     }
 } 

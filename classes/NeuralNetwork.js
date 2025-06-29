@@ -30,7 +30,7 @@ export class NeuralNetwork {
     /**
      * Performs a forward pass through the network.
      * @param {number[]} inputs - Normalized sensor values.
-     * @returns {number} Output between -1 and 1 representing steering delta.
+     * @returns {number} Output between -1 and 1 representing horizontal movement.
      */
     predict(inputs) {
         if (inputs.length !== this.inputSize) {
