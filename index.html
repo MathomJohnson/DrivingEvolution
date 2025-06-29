@@ -7,9 +7,15 @@
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  
+
   <!-- Statistics Button -->
   <button id="statsButton" class="stats-button">📊 Stats</button>
+
+  <!-- Start/Pause Button -->
+  <button id="toggleSim" class="control-button">Start</button>
+
+  <!-- Reset Button -->
+  <button id="resetSim" class="control-button">Reset</button>
   
   <!-- Statistics Modal -->
   <div id="statsModal" class="modal">
@@ -20,6 +26,28 @@
       </div>
       <div class="modal-body">
         <canvas id="graphCanvas" width="600" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuration Modal -->
+  <div id="configModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Simulation Setup</h2>
+      </div>
+      <div class="modal-body">
+        <label>
+          Obstacles:
+          <input type="number" id="obstacleCount" min="1" max="20" value="10" />
+        </label>
+        <br />
+        <label>
+          Cars:
+          <input type="number" id="carCount" min="1" max="200" value="100" />
+        </label>
+        <br />
+        <button id="startSim" class="control-button">Start Simulation</button>
       </div>
     </div>
   </div>

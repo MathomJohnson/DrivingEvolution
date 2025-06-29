@@ -220,6 +220,29 @@ export class SimulationManager {
         this.obstacleManager.reset();
     }
 
+    /**
+     * Fully reset the simulation to generation 1 with new parameters.
+     * @param {number} populationSize - Number of cars in the new generation.
+     * @param {number} obstacleCount - Number of obstacles to spawn.
+     */
+    reset(populationSize, obstacleCount) {
+        this.populationSize = populationSize;
+        if (typeof this.obstacleManager.setCount === 'function') {
+            this.obstacleManager.setCount(obstacleCount);
+        }
+
+        this.cars = [];
+        this.deadCars = [];
+        this.memoryQueue = [];
+        this.generationStats = [];
+        this.processedCars.clear();
+        this.maxFitness = 0;
+        this.distanceTraveled = 0;
+        this.generation = 1;
+
+        this.spawnInitialPopulation();
+    }
+
     getAliveCars() {
         return this.cars.filter(car => car.alive);
     }
