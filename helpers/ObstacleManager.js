@@ -80,4 +80,13 @@ export class ObstacleManager {
         // Add back the walls
         this.obstacles.push(...walls);
     }
+
+    /**
+     * Update the number of obstacles and rebuild them.
+     * @param {number} count - New obstacle count
+     */
+    setCount(count) {
+        this.count = count;
+        this.initializeObstacles();
+    }
 }

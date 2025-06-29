@@ -10,6 +10,14 @@ export class StatisticsManager {
         this.setupEventListeners();
     }
 
+    /**
+     * Replace the underlying simulation manager instance.
+     * @param {SimulationManager} manager
+     */
+    setSimulationManager(manager) {
+        this.simulationManager = manager;
+    }
+
     setupEventListeners() {
         // Open modal
         this.statsButton.addEventListener('click', () => {
