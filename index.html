@@ -22,12 +22,12 @@
     <div class="modal-content">
       <h2>Simulation Configuration</h2>
       <div class="config-item">
-        <label for="obstacleCount">Number of Obstacles:</label>
-        <input type="number" id="obstacleCount" min="1" max="20" value="8">
+        <label for="obstacleCount">Number of Obstacles: <span id="obstacleCountValue">8</span></label>
+        <input type="range" id="obstacleCount" min="1" max="30" value="8">
       </div>
       <div class="config-item">
-        <label for="carCount">Number of Cars:</label>
-        <input type="number" id="carCount" min="10" max="200" value="50">
+        <label for="carCount">Number of Cars: <span id="carCountValue">50</span></label>
+        <input type="range" id="carCount" min="1" max="150" value="50">
       </div>
       <div class="config-item">
         <label for="mutationRate">Mutation Rate: <span id="mutationRateValue">0.2</span></label>

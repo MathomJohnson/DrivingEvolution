@@ -66,20 +66,30 @@ export class Ray {
      * @param {CanvasRenderingContext2D} ctx - Canvas 2D context
      */
     draw(ctx) {
+        // Calculate the full ray end point (if no intersection)
+        const rayDx = Math.sin(this.angle);
+        const rayDy = -Math.cos(this.angle);
+        const fullRayEndX = this.originX + rayDx * this.maxLength;
+        const fullRayEndY = this.originY + rayDy * this.maxLength;
+
+        // Draw the main ray (green)
         ctx.strokeStyle = "rgba(0, 255, 0, 0.3)"; // semi-transparent green
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 3; // thicker line
         ctx.beginPath();
         ctx.moveTo(this.originX, this.originY);
         ctx.lineTo(this.endX, this.endY);
         ctx.stroke();
-    
-        if (this.hitPoint) {
-            ctx.fillStyle = "red";
-            ctx.beginPath();
-            ctx.arc(this.hitPoint[0], this.hitPoint[1], 3, 0, 2 * Math.PI);
-            ctx.fill();
-        }
 
+        // If there's a hit point, draw the grey portion after the intersection
+        if (this.hitPoint) {
+            ctx.strokeStyle = "rgba(64, 64, 64, 0.8)"; // darker semi-transparent grey
+            ctx.lineWidth = 3; // same thickness
+            ctx.beginPath();
+            ctx.moveTo(this.hitPoint[0], this.hitPoint[1]);
+            ctx.lineTo(fullRayEndX, fullRayEndY);
+            ctx.stroke();
+        }
+    
         // Draw distance value
         // ctx.fillStyle = "white";
         // ctx.font = "12px monospace";

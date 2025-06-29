@@ -33,6 +33,8 @@ const configModal = document.getElementById('configModal');
 const obstacleCountInput = document.getElementById('obstacleCount');
 const carCountInput = document.getElementById('carCount');
 const mutationRateInput = document.getElementById('mutationRate');
+const obstacleCountValue = document.getElementById('obstacleCountValue');
+const carCountValue = document.getElementById('carCountValue');
 const mutationRateValue = document.getElementById('mutationRateValue');
 const startSimulationBtn = document.getElementById('startSimulationBtn');
 
@@ -40,6 +42,8 @@ const startSimulationBtn = document.getElementById('startSimulationBtn');
 startPauseBtn.addEventListener('click', toggleSimulation);
 resetBtn.addEventListener('click', resetSimulation);
 startSimulationBtn.addEventListener('click', startSimulation);
+obstacleCountInput.addEventListener('input', updateObstacleCountDisplay);
+carCountInput.addEventListener('input', updateCarCountDisplay);
 mutationRateInput.addEventListener('input', updateMutationRateDisplay);
 
 // Initialize simulation
@@ -62,8 +66,8 @@ function startSimulation() {
     const carCount = parseInt(carCountInput.value);
     const mutationRate = parseFloat(mutationRateInput.value);
     
-    if (obstacleCount < 1 || carCount < 10) {
-        alert('Please enter valid values: Obstacles >= 1, Cars >= 10');
+    if (obstacleCount < 1 || carCount < 1) {
+        alert('Please enter valid values: Obstacles >= 1, Cars >= 1');
         return;
     }
     
@@ -94,6 +98,7 @@ function resetSimulation() {
     simState.reset();
     simManager = null;
     statsManager = null;
+    startPauseBtn.textContent = 'Start';
     showConfigModal();
 }
 
@@ -101,13 +106,17 @@ function resetSimulation() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    updateRoadLines(SPEED, canvas.height);
+    // Only update road lines if simulation is running
+    if (simState.isRunning) {
+        updateRoadLines(SPEED, canvas.height);
+    }
     drawRoadLines(ctx, canvas.width);
 
     if (simState.isRunning && simManager) {
         simManager.update();
     }
     
+    // Always draw the simulation (cars and obstacles) even when paused
     if (simManager) {
         simManager.draw(ctx);
     }
@@ -122,4 +131,14 @@ animate();
 // Update mutation rate display
 function updateMutationRateDisplay() {
     mutationRateValue.textContent = parseFloat(mutationRateInput.value).toFixed(2);
+}
+
+// Update obstacle count display
+function updateObstacleCountDisplay() {
+    obstacleCountValue.textContent = obstacleCountInput.value;
+}
+
+// Update car count display
+function updateCarCountDisplay() {
+    carCountValue.textContent = carCountInput.value;
 }

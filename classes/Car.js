@@ -30,11 +30,11 @@ export class Car {
         this.rayLength = 250;
         this.rays = [];
 
-        // Create rays with initial angles
+        // Create rays starting from the back of the car
         const mid = (this.numRays - 1) / 2;
         for (let i = 0; i < this.numRays; i++) {
             const offset = ((i - mid) / mid) * (this.raySpread / 2);
-            this.rays.push(new Ray(this.x, this.y, offset, this.rayLength));
+            this.rays.push(new Ray(this.x, this.y + this.height / 2 + 2, offset, this.rayLength));
         }
 
         // Neural network for decision making
@@ -48,8 +48,9 @@ export class Car {
     updateRays(obstacles) {
         if (!this.y) return; // Skip if y position not set yet
         
+        // Update rays from the back of the car
         for (const ray of this.rays) {
-            ray.cast(this.x, this.y, obstacles);
+            ray.cast(this.x, this.y + this.height / 2 - 2, obstacles);
         }
     }
       
@@ -72,7 +73,7 @@ export class Car {
                 return -1; // No obstacle detected
             } else {
                 // 1.0 = obstacle at max distance, 7.39 = obstacle touching car
-                return Math.exp(2.0 * (1.0 - ray.distance / ray.maxLength));
+                return Math.exp(2 * (1.0 - ray.distance / ray.maxLength)); 
             }
         });
 
