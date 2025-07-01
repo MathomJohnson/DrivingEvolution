@@ -61,7 +61,7 @@ function initializeSimulation() {
 }
 
 function showConfigModal() {
-    configModal.style.display = 'block';
+    configModal.classList.add('show');
     startPauseBtn.disabled = true;
     resetBtn.disabled = true;
 }
@@ -81,7 +81,7 @@ function startSimulation() {
     }
     
     simState.configure(obstacleCount, carCount, parentCount, mutationRate, mutationMagnitude);
-    configModal.style.display = 'none';
+    configModal.classList.remove('show');
     createSimulation();
     startPauseBtn.disabled = false;
     resetBtn.disabled = false;

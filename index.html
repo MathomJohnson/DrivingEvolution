@@ -6,16 +6,18 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <canvas id="canvas"></canvas>
-  
-  <!-- Control buttons -->
-  <div id="controls">
-    <button id="startPauseBtn">Start</button>
-    <button id="resetBtn">Reset</button>
+  <div class="simulation-container">
+    <canvas id="canvas"></canvas>
+    
+    <!-- Control buttons -->
+    <div id="controls">
+      <button id="startPauseBtn">Start</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    
+    <!-- Statistics Button -->
+    <button id="statsButton" class="stats-button">📊 Stats</button>
   </div>
-  
-  <!-- Statistics Button -->
-  <button id="statsButton" class="stats-button">📊 Stats</button>
   
   <!-- Configuration Modal -->
   <div id="configModal" class="modal">

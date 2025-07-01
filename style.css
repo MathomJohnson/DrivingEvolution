@@ -2,24 +2,47 @@ body {
     margin: 0;
     background: #111;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  /* Simulation container */
+  .simulation-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
   }
   
   canvas {
     display: block;
-    margin: 0 auto;
     background: #222;
+    max-width: 100%;
+    max-height: 100vh;
   }
   
   /* Control buttons */
   #controls {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 1000;
+    display: flex;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 2px solid #444;
+    backdrop-filter: blur(5px);
   }
 
   #controls button {
-    margin: 5px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -28,6 +51,7 @@ body {
     border: none;
     border-radius: 5px;
     transition: all 0.3s ease;
+    white-space: nowrap;
   }
 
   #controls button:hover {
@@ -156,9 +180,10 @@ body {
   
   /* Statistics Button */
   .stats-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.7);
     color: white;
     border: 2px solid #444;
@@ -189,15 +214,22 @@ body {
     backdrop-filter: blur(5px);
   }
 
+  .modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .modal-content {
     background-color: #222;
-    margin: 5% auto;
     padding: 0;
     border: 2px solid #444;
     border-radius: 12px;
     width: 650px;
     max-width: 90%;
+    max-height: 90vh;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
   }
 
   .modal-header {

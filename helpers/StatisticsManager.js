@@ -30,12 +30,12 @@ export class StatisticsManager {
     }
 
     openModal() {
-        this.modal.style.display = 'block';
+        this.modal.classList.add('show');
         this.drawGraph();
     }
 
     closeModal() {
-        this.modal.style.display = 'none';
+        this.modal.classList.remove('show');
     }
 
     drawGraph() {
