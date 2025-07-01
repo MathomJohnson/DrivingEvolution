@@ -198,7 +198,7 @@ body {
   .stats-button:hover {
     background: rgba(0, 0, 0, 0.9);
     border-color: #666;
-    transform: scale(1.05);
+    transform: translateX(-50%) scale(1.05);
   }
 
   /* Modal */
