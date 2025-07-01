@@ -27,13 +27,6 @@ export class StatisticsManager {
                 this.closeModal();
             }
         });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.modal.style.display === 'block') {
-                this.closeModal();
-            }
-        });
     }
 
     openModal() {

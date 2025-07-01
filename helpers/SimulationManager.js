@@ -16,7 +16,6 @@ export class SimulationManager {
 
         this.cars = [];
         this.deadCars = [];
-        this.maxFitness = 0;  // Track best fitness in current generation
         this.distanceTraveled = 0; // Total distance traveled this generation
         this.isEvolving = false; // Flag for generation transition delay
         // Track generation statistics
@@ -27,13 +26,18 @@ export class SimulationManager {
 
     spawnInitialPopulation() {
         for (let i = 0; i < this.populationSize; i++) {
+            // Randomly position each car within the middle 50% of the canvas width
+            const middle50PercentStart = this.canvas.width * 0.25; // 25% from left edge
+            const middle50PercentEnd = this.canvas.width * 0.75;   // 75% from left edge
+            const randomX = middle50PercentStart + Math.random() * (middle50PercentEnd - middle50PercentStart);
+            
             this.cars.push(new Car(
-                this.canvas.width / 2,  // x
-                this.CAR_WIDTH,         // width
-                this.CAR_HEIGHT,        // height
-                this.canvas.width,      // canvasWidth
-                this.speed,             // speed
-                this.generation         // generation
+                this.canvas.width/2,
+                this.CAR_WIDTH,
+                this.CAR_HEIGHT,
+                this.canvas.width,
+                this.speed,
+                this.generation
             ));
         }
     }
@@ -49,7 +53,6 @@ export class SimulationManager {
         for (const car of this.cars) {
             if (car.alive) {
                 car.update(this.obstacleManager.getObstacles());
-                this.maxFitness = Math.max(this.maxFitness, car.fitness);
             }
         }
 
@@ -163,10 +166,15 @@ export class SimulationManager {
             clone.brain.mutate(this.mutationRate);
             clone.generation = nextGen;
             newCars.push(clone);
+            
             if (newCars.length < this.populationSize) {
-                // Add a completely random car occasionally for diversity
+                // Add a completely random car for diversity
+                const middle50PercentStart = this.canvas.width * 0.25;
+                const middle50PercentEnd = this.canvas.width * 0.75;
+                const randomX = middle50PercentStart + Math.random() * (middle50PercentEnd - middle50PercentStart);
+
                 const randomCar = new Car(
-                    this.canvas.width / 2,
+                    randomX,  // Use random position instead of center
                     this.CAR_WIDTH,
                     this.CAR_HEIGHT, 
                     this.canvas.width,
@@ -181,7 +189,6 @@ export class SimulationManager {
         // Reset for new generation
         this.cars = newCars;
         this.deadCars = [];
-        this.maxFitness = 0;
         this.distanceTraveled = 0;
         this.generation++;
 

@@ -4,7 +4,9 @@ export class SimulationState {
         this.isConfigured = false;
         this.obstacleCount = 8;
         this.carCount = 50;
+        this.parentCount = 10;
         this.mutationRate = 0.2;
+        this.mutationMagnitude = 0.15;
         this.isFirstLoad = true;
     }
 
@@ -22,10 +24,12 @@ export class SimulationState {
         this.isFirstLoad = false;
     }
 
-    configure(obstacleCount, carCount, mutationRate) {
+    configure(obstacleCount, carCount, parentCount, mutationRate, mutationMagnitude) {
         this.obstacleCount = obstacleCount;
         this.carCount = carCount;
+        this.parentCount = parentCount;
         this.mutationRate = mutationRate;
+        this.mutationMagnitude = mutationMagnitude;
         this.isConfigured = true;
     }
 } 

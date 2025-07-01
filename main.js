@@ -19,7 +19,6 @@ initRoadLines(canvas.height);
 
 // Define constants
 const SPEED = 1;
-const PARENT_COUNT = 10;
 
 // Simulation state management
 const simState = new SimulationState();
@@ -32,10 +31,14 @@ const resetBtn = document.getElementById('resetBtn');
 const configModal = document.getElementById('configModal');
 const obstacleCountInput = document.getElementById('obstacleCount');
 const carCountInput = document.getElementById('carCount');
+const parentCountInput = document.getElementById('parentCount');
 const mutationRateInput = document.getElementById('mutationRate');
+const mutationMagnitudeInput = document.getElementById('mutationMagnitude');
 const obstacleCountValue = document.getElementById('obstacleCountValue');
 const carCountValue = document.getElementById('carCountValue');
+const parentCountValue = document.getElementById('parentCountValue');
 const mutationRateValue = document.getElementById('mutationRateValue');
+const mutationMagnitudeValue = document.getElementById('mutationMagnitudeValue');
 const startSimulationBtn = document.getElementById('startSimulationBtn');
 
 // Event listeners
@@ -44,7 +47,9 @@ resetBtn.addEventListener('click', resetSimulation);
 startSimulationBtn.addEventListener('click', startSimulation);
 obstacleCountInput.addEventListener('input', updateObstacleCountDisplay);
 carCountInput.addEventListener('input', updateCarCountDisplay);
+parentCountInput.addEventListener('input', updateParentCountDisplay);
 mutationRateInput.addEventListener('input', updateMutationRateDisplay);
+mutationMagnitudeInput.addEventListener('input', updateMutationMagnitudeDisplay);
 
 // Initialize simulation
 function initializeSimulation() {
@@ -64,14 +69,18 @@ function showConfigModal() {
 function startSimulation() {
     const obstacleCount = parseInt(obstacleCountInput.value);
     const carCount = parseInt(carCountInput.value);
+    let parentCount = parseInt(parentCountInput.value);
     const mutationRate = parseFloat(mutationRateInput.value);
+    const mutationMagnitude = parseFloat(mutationMagnitudeInput.value);
     
-    if (obstacleCount < 1 || carCount < 1) {
-        alert('Please enter valid values: Obstacles >= 1, Cars >= 1');
-        return;
+    // Ensure parent count doesn't exceed car count
+    if (parentCount > carCount) {
+        parentCount = carCount;
+        parentCountInput.value = carCount;
+        parentCountValue.textContent = carCount;
     }
     
-    simState.configure(obstacleCount, carCount, mutationRate);
+    simState.configure(obstacleCount, carCount, parentCount, mutationRate, mutationMagnitude);
     configModal.style.display = 'none';
     createSimulation();
     startPauseBtn.disabled = false;
@@ -80,7 +89,7 @@ function startSimulation() {
 
 function createSimulation() {
     const obstacleManager = new ObstacleManager(canvas, simState.obstacleCount, SPEED);
-    simManager = new SimulationManager(canvas, obstacleManager, simState.carCount, PARENT_COUNT, SPEED, simState.mutationRate);
+    simManager = new SimulationManager(canvas, obstacleManager, simState.carCount, simState.parentCount, SPEED, simState.mutationRate, simState.mutationMagnitude);
     statsManager = new StatisticsManager(simManager);
 }
 
@@ -124,10 +133,6 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-// Start the application
-initializeSimulation();
-animate();
-
 // Update mutation rate display
 function updateMutationRateDisplay() {
     mutationRateValue.textContent = parseFloat(mutationRateInput.value).toFixed(2);
@@ -138,7 +143,31 @@ function updateObstacleCountDisplay() {
     obstacleCountValue.textContent = obstacleCountInput.value;
 }
 
-// Update car count display
+// Update parent count display
+function updateParentCountDisplay() {
+    parentCountValue.textContent = parentCountInput.value;
+}
+
+// Update car count display and adjust parent count max
 function updateCarCountDisplay() {
     carCountValue.textContent = carCountInput.value;
+    
+    // Update parent count max to be capped at car count
+    const carCount = parseInt(carCountInput.value);
+    parentCountInput.max = carCount;
+    
+    // If current parent count exceeds new car count, adjust it
+    if (parseInt(parentCountInput.value) > carCount) {
+        parentCountInput.value = carCount;
+        parentCountValue.textContent = carCount;
+    }
 }
+
+// Update mutation magnitude display
+function updateMutationMagnitudeDisplay() {
+    mutationMagnitudeValue.textContent = parseFloat(mutationMagnitudeInput.value).toFixed(2);
+}
+
+// Start the application
+initializeSimulation();
+animate();

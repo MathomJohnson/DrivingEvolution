@@ -1,7 +1,7 @@
 import { Obstacle } from "../classes/Obstacle.js";
 
 export class ObstacleManager {
-    constructor(canvas, obstacleCount = 5, speed) {
+    constructor(canvas, obstacleCount, speed) {
         this.canvas = canvas;
         this.count = obstacleCount;
         this.speed = speed;
@@ -22,16 +22,11 @@ export class ObstacleManager {
         }
 
         // Manually add sides of the road as obstacles
-        this.obstacles.push(new Obstacle(0, this.canvas.height / 2, 10, this.canvas.height, 0)); // left wall
-        this.obstacles.push(new Obstacle(this.canvas.width, this.canvas.height / 2, 10, this.canvas.height, 0)); // right wall
+        this.obstacles.push(new Obstacle(1, this.canvas.height / 2, 10, this.canvas.height, 0)); // left wall
+        this.obstacles.push(new Obstacle(this.canvas.width - 1, this.canvas.height / 2, 10, this.canvas.height, 0)); // right wall
     }
 
     getRandomX() {
-        // Allow obstacles to spawn partially outside the road bounds so that
-        // "side hugging" cars cannot exploit a gap next to the walls. An
-        // obstacle's center can be anywhere from -width/2 to
-        // canvas.width + width/2 which means it may overlap the wall by up to
-        // half of its width but will never be completely outside the canvas.
         const minX = -this.width / 2;
         const maxX = this.canvas.width + this.width / 2;
         return minX + Math.random() * (maxX - minX);

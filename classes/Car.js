@@ -8,25 +8,18 @@ export class Car {
         // Width and height of the car
         this.width = width;
         this.height = height;
-
         this.canvasWidth = canvasWidth;
-
-        // Penalty multiplier applied when the car strays from the road center
-        this.centerPenaltyMultiplier = 0.1; // Math.random() * 0.5 + 0.5;
-        // Penalty multiplier when the forward ray detects a nearby obstacle
-        this.proximityPenaltyMultiplier = 0.8;
-
         // Horizontal movement speed of the car
         this.speed = speed;
+        this.speedMultiplier = 1.2;
         this.generation = generation;
         // Whether the car has hit an obstacle or not
         this.alive = true;
         // Fitness value used for evolution (includes penalties)
         this.fitness = 0;
-
         // Initialize rays
         this.numRays = 5;
-        this.raySpread = (75 * Math.PI) / 180; // 75 degrees field of view
+        this.raySpread = (60 * Math.PI) / 180; // 60 degrees field of view
         this.rayLength = 250;
         this.rays = [];
 
@@ -67,47 +60,22 @@ export class Car {
         // Cast rays and compute intersections
         this.updateRays(obstacles);
 
-        // 3. Normalize ray distances and add hit flags for each ray
+        // Normalize ray distances and add hit flags for each ray
         const inputs = this.rays.map(ray => {
             if (ray.hitPoint === null) {
-                return -1; // No obstacle detected
+                return -2; // No obstacle detected
             } else {
                 // 1.0 = obstacle at max distance, 7.39 = obstacle touching car
                 return Math.exp(2 * (1.0 - ray.distance / ray.maxLength)); 
             }
         });
 
-        // const inputs = this.rays.map(ray => {
-        //     if (ray.hitPoint === null) {
-        //         return 0;
-        //     } else {
-        //         const normalizedDistance = ray.distance / ray.maxLength;
-        //         // Returns: min=1.0 (when obstacle at max distance), max=4.48 (when obstacle touches car)
-        //         return Math.exp(1.5 * (1 - normalizedDistance));
-        //     }
-        // });
-
-
         // Use neural network output to determine horizontal movement
-        const deltaX = this.brain.predict(inputs) * this.speed;
+        const deltaX = this.brain.predict(inputs) * this.speed * this.speedMultiplier;
         this.x += deltaX;
 
-        // 6. Update fitness (distance traveled) and apply penalty for
-        // drifting away from the road center
-        this.fitness += this.speed;
-
-        const centerX = this.canvasWidth / 2;
-        const distanceFromCenter = Math.abs(this.x - centerX);
-        const normalized = distanceFromCenter / centerX; // 0 at center, 1 at edge
-        this.fitness -= normalized * this.centerPenaltyMultiplier * this.speed;
-
-        // Penalize if the forward-facing ray detects an obstacle too close
-        const middleIndex = Math.floor(this.rays.length / 2);
-        const middleRay = this.rays[middleIndex];
-        if (middleRay.distance < this.rayLength * 0.75) {
-            const penalty = this.proximityPenaltyMultiplier * this.speed;
-            this.fitness -= penalty;
-        }
+        // Update fitness (distance traveled)
+        this.fitness += this.speed * this.speedMultiplier;
     }
   
     /**
@@ -120,24 +88,17 @@ export class Car {
         if (!this.alive) return;
 
         this.y = ctx.canvas.height * 0.8; // Update the stored y position
-
         // Draw rays first (in world space, before car transformations)
         for (const ray of this.rays) {
             ray.draw(ctx);
         }
-
         // Save the current canvas state before transformations
         ctx.save();
-        
         // Move canvas origin to car's position
         ctx.translate(this.x, this.y);
-
-        // Set car color
         ctx.fillStyle = "blue";
-        
         // Draw car centered on origin (accounting for car dimensions)
         ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-
         // Restore canvas state to before transformations
         ctx.restore();
     }
@@ -148,8 +109,13 @@ export class Car {
      * @returns {Car} A new Car object with cloned brain.
      */
     clone() {
+        // Randomly position the car within the middle 50% of the canvas width
+        const middle50PercentStart = this.canvasWidth * 0.25; // 25% from left edge
+        const middle50PercentEnd = this.canvasWidth * 0.75;   // 75% from left edge
+        const randomX = middle50PercentStart + Math.random() * (middle50PercentEnd - middle50PercentStart);
+        
         const clone = new Car(
-            this.canvasWidth / 2,
+            randomX,  // Use random position instead of center
             this.width,
             this.height,
             this.canvasWidth,
