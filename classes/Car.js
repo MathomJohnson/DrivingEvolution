@@ -104,6 +104,30 @@ export class Car {
     }
 
     /**
+     * Returns the world coordinates of the car's four corners
+     * accounting for its current rotation.
+     * @returns {{x:number, y:number}[]} Array of 4 corner points
+     */
+    getCorners() {
+        const w2 = this.width / 2;
+        const h2 = this.height / 2;
+        const sin = Math.sin(this.angle);
+        const cos = Math.cos(this.angle);
+
+        const local = [
+            { x: -w2, y: -h2 },
+            { x:  w2, y: -h2 },
+            { x:  w2, y:  h2 },
+            { x: -w2, y:  h2 }
+        ];
+
+        return local.map(p => ({
+            x: this.x + p.x * cos - p.y * sin,
+            y: this.y + p.x * sin + p.y * cos
+        }));
+    }
+
+    /**
      * Creates a deep clone of this car, including its neural network.
      * Used during evolution to preserve elite behavior.
      * @returns {Car} A new Car object with cloned brain.
