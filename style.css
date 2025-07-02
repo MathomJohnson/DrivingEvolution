@@ -178,12 +178,19 @@ body {
     transform: scale(1.02);
   }
   
-  /* Statistics Button */
-  .stats-button {
+  /* Bottom buttons container */
+  .bottom-buttons {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 1000;
+  }
+
+  /* Info Button */
+  .info-button {
     background: rgba(0, 0, 0, 0.7);
     color: white;
     border: 2px solid #444;
@@ -191,14 +198,31 @@ body {
     padding: 10px 15px;
     font-size: 16px;
     cursor: pointer;
-    z-index: 1000;
+    transition: all 0.3s ease;
+  }
+
+  .info-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: #666;
+    transform: scale(1.05);
+  }
+  
+  /* Statistics Button */
+  .stats-button {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
     transition: all 0.3s ease;
   }
 
   .stats-button:hover {
     background: rgba(0, 0, 0, 0.9);
     border-color: #666;
-    transform: translateX(-50%) scale(1.05);
+    transform: scale(1.05);
   }
 
   /* Modal */
@@ -338,5 +362,95 @@ body {
     border-top-color: rgba(0, 0, 0, 0.9);
     margin-bottom: 1px;
     pointer-events: none;
+  }
+
+  /* Info Modal Specific Styles */
+  .info-modal-content {
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .info-modal-content .modal-header {
+    position: sticky;
+    top: 0;
+    background-color: #2a2a2a;
+    z-index: 10;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
+    padding: 20px 25px 15px 25px;
+  }
+
+  .info-modal-body {
+    padding: 25px;
+    color: #e0e0e0;
+    line-height: 1.7;
+    font-size: 14px;
+  }
+
+  .info-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .info-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-section h3 {
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .info-section p {
+    margin-bottom: 15px;
+    text-align: justify;
+    color: #d0d0d0;
+  }
+
+  .info-section ul {
+    margin: 15px 0;
+    padding-left: 20px;
+  }
+
+  .info-section li {
+    margin-bottom: 10px;
+    text-align: justify;
+    color: #d0d0d0;
+  }
+
+  .info-section strong {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .parameter-grid {
+    display: grid;
+    gap: 18px;
+  }
+
+  .parameter-item {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .parameter-item strong {
+    color: #ffffff;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
   }
   

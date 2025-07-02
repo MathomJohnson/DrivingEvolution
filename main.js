@@ -40,6 +40,9 @@ const parentCountValue = document.getElementById('parentCountValue');
 const mutationRateValue = document.getElementById('mutationRateValue');
 const mutationMagnitudeValue = document.getElementById('mutationMagnitudeValue');
 const startSimulationBtn = document.getElementById('startSimulationBtn');
+const infoButton = document.getElementById('infoButton');
+const infoModal = document.getElementById('infoModal');
+const closeInfoModal = document.getElementById('closeInfoModal');
 
 // Event listeners
 startPauseBtn.addEventListener('click', toggleSimulation);
@@ -50,6 +53,8 @@ carCountInput.addEventListener('input', updateCarCountDisplay);
 parentCountInput.addEventListener('input', updateParentCountDisplay);
 mutationRateInput.addEventListener('input', updateMutationRateDisplay);
 mutationMagnitudeInput.addEventListener('input', updateMutationMagnitudeDisplay);
+infoButton.addEventListener('click', showInfoModal);
+closeInfoModal.addEventListener('click', hideInfoModal);
 
 // Initialize simulation
 function initializeSimulation() {
@@ -167,6 +172,21 @@ function updateCarCountDisplay() {
 function updateMutationMagnitudeDisplay() {
     mutationMagnitudeValue.textContent = parseFloat(mutationMagnitudeInput.value).toFixed(2);
 }
+
+function showInfoModal() {
+    infoModal.classList.add('show');
+}
+
+function hideInfoModal() {
+    infoModal.classList.remove('show');
+}
+
+// Close modal when clicking outside of it
+window.addEventListener('click', (event) => {
+    if (event.target === infoModal) {
+        hideInfoModal();
+    }
+});
 
 // Start the application
 initializeSimulation();

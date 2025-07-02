@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Car AI Simulator</title>
+  <title>Driving Evolution</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -15,8 +15,11 @@
       <button id="resetBtn">Reset</button>
     </div>
     
-    <!-- Statistics Button -->
-    <button id="statsButton" class="stats-button">📊 Stats</button>
+    <!-- Bottom buttons -->
+    <div class="bottom-buttons">
+      <button id="infoButton" class="info-button">ℹ️ Info</button>
+      <button id="statsButton" class="stats-button">📊 Stats</button>
+    </div>
   </div>
   
   <!-- Configuration Modal -->
@@ -59,6 +62,96 @@
         <input type="range" id="mutationMagnitude" min="0" max="0.5" step="0.01" value="0.15">
       </div>
       <button id="startSimulationBtn">Start Simulation</button>
+    </div>
+  </div>
+  
+  <!-- Info Modal -->
+  <div id="infoModal" class="modal">
+    <div class="modal-content info-modal-content">
+      <div class="modal-header">
+        <h2>Driving Evolution</h2>
+        <button id="closeInfoModal" class="close-button">&times;</button>
+      </div>
+      <div class="modal-body info-modal-body">
+        <div class="info-section">
+          <h3>What is this simulation?</h3>
+          <p>This is a <strong>Neural Network Evolution Simulator</strong> that demonstrates how artificial intelligence can learn to drive through a simple genetic algorithm. Cars equipped with neural networks learn to navigate around moving obstacles through generations of trial and error.</p>
+        </div>
+
+        <div class="info-section">
+          <h3>How it works</h3>
+          <ul>
+            <li><strong>Neural Networks:</strong> Each car has a brain (neural network) with 5 input neurons (sensors), 2 hidden layers (3→2 neurons), and 1 output neuron (steering)</li>
+            <li><strong>Ray Sensors:</strong> Cars cast 5 rays in front of them to detect obstacles at different angles</li>
+            <li><strong>Fitness:</strong> Cars are scored based on how far they travel before hitting obstacles</li>
+            <li><strong>Evolution:</strong> The best-performing cars pass their "genes" (neural network weights) to the next generation</li>
+            <li><strong>Mutation:</strong> Random changes to neural network weights create diversity and allow for improvement</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>Key Parameters Explained</h3>
+          <div class="parameter-grid">
+            <div class="parameter-item">
+              <strong>Number of Obstacles:</strong> More obstacles = harder challenge. Start with 5-8 for learning, increase to 10+ for advanced testing.
+            </div>
+            <div class="parameter-item">
+              <strong>Number of Cars:</strong> Larger populations (50-100) explore more strategies but run slower. Smaller populations (20-30) are faster but may get stuck in local optima.
+            </div>
+            <div class="parameter-item">
+              <strong>Parent Count:</strong> How many best cars survive each generation. 10-20% of population works well. Too few = loss of diversity, too many = slow evolution.
+            </div>
+            <div class="parameter-item">
+              <strong>Mutation Rate:</strong> Probability of each neural network weight changing. 0.1-0.3 is optimal. Higher = more exploration but less stable learning.
+            </div>
+            <div class="parameter-item">
+              <strong>Mutation Magnitude:</strong> Maximum change to weights during mutation. 0.1-0.2 works well. Higher = bigger jumps but may overshoot optimal solutions.
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>Experimentation Tips</h3>
+          <ul>
+            <li><strong>Start Simple:</strong> Begin with 5 obstacles, 30 cars, 5 parents, 0.2 mutation rate, 0.15 magnitude</li>
+            <li><strong>Explore vs Exploit:</strong> Higher mutation rates explore new strategies, lower rates refine existing ones</li>
+            <li><strong>Population Size:</strong> Larger populations find better solutions but take longer to converge</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>What to look for</h3>
+          <ul>
+            <li><strong>Learning Curve:</strong> Cars should improve over generations, traveling further before crashing</li>
+            <li><strong>Emergent Behavior:</strong> Watch how cars develop different strategies - some may be aggressive, others cautious</li>
+            <li><strong>Convergence:</strong> Eventually, most cars will adopt similar successful strategies</li>
+            <li><strong>Adaptation:</strong> Cars should learn to navigate around obstacles efficiently</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>Technical Details</h3>
+          <ul>
+            <li><strong>Neural Network:</strong> Feed-forward network with tanh activation function</li>
+            <li><strong>Input Processing:</strong> Ray distances are normalized using exponential scaling for better sensitivity</li>
+            <li><strong>Output:</strong> Single value between -1 and 1 controlling horizontal movement</li>
+            <li><strong>Evolution:</strong> Elitism + mutation strategy with random individuals for diversity</li>
+            <li><strong>Fitness:</strong> Based on distance traveled, with cars eliminated on collision</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>Educational Value</h3>
+          <p>This simulation demonstrates key concepts in artificial intelligence and evolutionary computation:</p>
+          <ul>
+            <li><strong>Neural Networks:</strong> How simple networks can learn complex behaviors</li>
+            <li><strong>Genetic Algorithms:</strong> Evolution as an optimization strategy</li>
+            <li><strong>Emergent Intelligence:</strong> Complex behavior arising from simple rules</li>
+            <li><strong>Parameter Tuning:</strong> The importance of hyperparameter selection in AI</li>
+            <li><strong>Fitness Landscapes:</strong> How different strategies compete and evolve</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
   
