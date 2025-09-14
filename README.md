@@ -3,6 +3,7 @@
 A lightweight, browser-based simulation that demonstrates how simple neural networks can learn to drive using an evolutionary process. Cars sense their environment with ray sensors, make steering decisions with a small feed‑forward neural network, and improve over generations through elitism and mutation.
 
 ### Demo
+- Try it out [here](https://driving-evolution.vercel.app/)
 - Watch the overview video: [YouTube demonstration](https://youtu.be/d9TAtKHgxTw)
 
 ### Features
@@ -21,20 +22,6 @@ A lightweight, browser-based simulation that demonstrates how simple neural netw
   - Elitism: best performers are cloned directly
   - Mutation: clones of elites are randomly perturbed
   - Occasional random newcomers for diversity
-
-## Getting Started
-
-This is a static web app (no build step). Because ES modules are used (`type="module"`), run it from a local web server (not `file://`).
-
-### Quick run options
-- VS Code: Use the “Live Server” extension and open `index.html`.
-- Python 3: `python -m http.server 8000` then open `http://localhost:8000/`.
-- Node.js (npx): `npx http-server -p 8000 | cat` and open `http://localhost:8000/`.
-
-### Manual steps
-1. Clone or download this repository.
-2. Start a local static server from the project root.
-3. Open `http://localhost:<port>/` and load `index.html`.
 
 ## Usage
 
@@ -77,15 +64,5 @@ DrivingEvolution/
 - Sensors: 5 rays spanning a ~60° field; exponential scaling improves near-field sensitivity.
 - Fitness: cumulative distance while alive; collisions end the car’s run.
 - Evolution: elites cloned directly; additional population filled by mutated clones and some random cars.
-
-## Development
-
-- Tweak behavior in `classes/` and `helpers/`.
-- UI and layout live in `index.html` and `style.css`.
-- The stats graph reads data from `SimulationManager.getGenerationStats()`.
-
-## License
-
-Add a license file (e.g., MIT) to clarify reuse. If you already have a preferred license, add `LICENSE` at the repo root and update this section.
 
 
