@@ -7,6 +7,7 @@ import {
     drawRoadLines,
 } from './helpers/roadLines.js';
 import { ObstacleManager } from './helpers/ObstacleManager.js';
+import { NetworkVisualizer } from './helpers/NetworkVisualizer.js';
 
 // Get canvas and context
 const canvas = document.getElementById("canvas");
@@ -16,6 +17,12 @@ const ctx = canvas.getContext("2d");
 
 // Initialize road lines
 initRoadLines(canvas.height);
+
+// Initialize Neural Network Visualizer
+const visualizerCanvas = document.getElementById('nn-visualizer');
+const networkVisualizer = new NetworkVisualizer(visualizerCanvas);
+let visualizerEnabled = true;
+let selectedCarMode = 'best'; // 'best', 'worst', 'random'
 
 // Define constants
 const SPEED = 1;
@@ -44,6 +51,13 @@ const infoButton = document.getElementById('infoButton');
 const infoModal = document.getElementById('infoModal');
 const closeInfoModal = document.getElementById('closeInfoModal');
 
+// Visualizer DOM elements
+const visualizerContainer = document.getElementById('visualizer-container');
+const toggleVisualizerBtn = document.getElementById('toggleVisualizer');
+const carSelector = document.getElementById('carSelector');
+const showWeightsCheckbox = document.getElementById('showWeights');
+const showValuesCheckbox = document.getElementById('showValues');
+
 // Event listeners
 startPauseBtn.addEventListener('click', toggleSimulation);
 resetBtn.addEventListener('click', resetSimulation);
@@ -55,6 +69,18 @@ mutationRateInput.addEventListener('input', updateMutationRateDisplay);
 mutationMagnitudeInput.addEventListener('input', updateMutationMagnitudeDisplay);
 infoButton.addEventListener('click', showInfoModal);
 closeInfoModal.addEventListener('click', hideInfoModal);
+
+// Visualizer event listeners
+toggleVisualizerBtn.addEventListener('click', toggleVisualizer);
+carSelector.addEventListener('change', (e) => {
+    selectedCarMode = e.target.value;
+});
+showWeightsCheckbox.addEventListener('change', (e) => {
+    networkVisualizer.updateConfig({ showWeights: e.target.checked });
+});
+showValuesCheckbox.addEventListener('change', (e) => {
+    networkVisualizer.updateConfig({ showValues: e.target.checked });
+});
 
 // Initialize simulation
 function initializeSimulation() {
@@ -116,6 +142,63 @@ function resetSimulation() {
     showConfigModal();
 }
 
+// Visualizer functions
+function toggleVisualizer() {
+    visualizerEnabled = !visualizerEnabled;
+    if (visualizerEnabled) {
+        visualizerContainer.classList.remove('hidden');
+        toggleVisualizerBtn.textContent = 'Hide';
+    } else {
+        visualizerContainer.classList.add('hidden');
+        toggleVisualizerBtn.textContent = 'Show';
+    }
+}
+
+function getSelectedCar() {
+    if (!simManager || !simManager.cars || simManager.cars.length === 0) {
+        return null;
+    }
+
+    const cars = simManager.cars;
+
+    switch (selectedCarMode) {
+        case 'best':
+            // Find car with highest fitness (distance traveled)
+            return cars.reduce((best, car) =>
+                car.fitness > best.fitness ? car : best
+            );
+
+        case 'worst':
+            // Find car with lowest fitness among alive cars, or any car if all dead
+            const aliveCars = cars.filter(car => car.alive);
+            const carsToCheck = aliveCars.length > 0 ? aliveCars : cars;
+            return carsToCheck.reduce((worst, car) =>
+                car.fitness < worst.fitness ? car : worst
+            );
+
+        case 'random':
+            // Pick a random alive car, or any random car if all dead
+            const aliveRandomCars = cars.filter(car => car.alive);
+            const randomPool = aliveRandomCars.length > 0 ? aliveRandomCars : cars;
+            return randomPool[Math.floor(Math.random() * randomPool.length)];
+
+        default:
+            return cars[0];
+    }
+}
+
+function updateVisualizer() {
+    const selectedCar = getSelectedCar();
+    if (!selectedCar || !selectedCar.brain) {
+        return;
+    }
+
+    const inputLabels = ['Ray L2', 'Ray L1', 'Ray C', 'Ray R1', 'Ray R2'];
+    const outputLabels = ['Steering'];
+
+    networkVisualizer.draw(selectedCar.brain, inputLabels, outputLabels);
+}
+
 // Animation loop
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -129,10 +212,15 @@ function animate() {
     if (simState.isRunning && simManager) {
         simManager.update();
     }
-    
+
     // Always draw the simulation (cars and obstacles) even when paused
     if (simManager) {
         simManager.draw(ctx);
+    }
+
+    // Update neural network visualizer
+    if (visualizerEnabled && simManager) {
+        updateVisualizer();
     }
 
     requestAnimationFrame(animate);

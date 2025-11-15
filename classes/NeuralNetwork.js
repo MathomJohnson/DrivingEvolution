@@ -25,6 +25,9 @@ export class NeuralNetwork {
             this.weights.push(weightMatrix);
             this.biases.push(biasVector);
         }
+
+        // Store activations for visualization
+        this.activations = [];
     }
   
     /**
@@ -36,6 +39,9 @@ export class NeuralNetwork {
         if (inputs.length !== this.inputSize) {
             throw new Error(`Expected ${this.inputSize} inputs, got ${inputs.length}`);
         }
+
+        // Store activations for visualization - start with input layer
+        this.activations = [inputs];
 
         let activations = inputs;
         for (let layer = 0; layer < this.weights.length; layer++) {
@@ -51,6 +57,8 @@ export class NeuralNetwork {
                 next[i] = this.tanh(sum);
             }
             activations = next;
+            // Store this layer's activations
+            this.activations.push([...activations]);
         }
 
         return activations[0];
@@ -115,6 +123,42 @@ export class NeuralNetwork {
             layer.map((_, j) => (a.biases[i][j] + b.biases[i][j]) / 2)
         );
         return child;
+    }
+
+    /**
+     * Getter methods for visualization
+     */
+
+    /**
+     * Returns the layer sizes configuration.
+     * @returns {number[]} Array of layer sizes [input, hidden..., output]
+     */
+    getLayerSizes() {
+        return this.layerSizes;
+    }
+
+    /**
+     * Returns all weight matrices.
+     * @returns {number[][][]} Array of weight matrices for each layer connection
+     */
+    getWeights() {
+        return this.weights;
+    }
+
+    /**
+     * Returns all bias vectors.
+     * @returns {number[][]} Array of bias vectors for each layer
+     */
+    getBiases() {
+        return this.biases;
+    }
+
+    /**
+     * Returns the most recent activations from the last predict() call.
+     * @returns {number[][]} Array of activation arrays for each layer (input, hidden..., output)
+     */
+    getActivations() {
+        return this.activations;
     }
 
     /**

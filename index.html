@@ -21,7 +21,32 @@
       <button id="statsButton" class="stats-button">📊 Stats</button>
     </div>
   </div>
-  
+
+  <!-- Neural Network Visualizer -->
+  <div id="visualizer-container" class="visualizer-container">
+    <div class="visualizer-header">
+      <h3>Neural Network Visualizer</h3>
+      <button id="toggleVisualizer" class="visualizer-toggle-btn">Hide</button>
+    </div>
+    <canvas id="nn-visualizer"></canvas>
+    <div class="visualizer-controls">
+      <label class="visualizer-control-label">
+        Car:
+        <select id="carSelector" class="visualizer-select">
+          <option value="best">Best Performing</option>
+          <option value="worst">Worst Performing</option>
+          <option value="random">Random</option>
+        </select>
+      </label>
+      <label class="visualizer-checkbox">
+        <input type="checkbox" id="showWeights" checked> Show Weights
+      </label>
+      <label class="visualizer-checkbox">
+        <input type="checkbox" id="showValues"> Show Values
+      </label>
+    </div>
+  </div>
+
   <!-- Configuration Modal -->
   <div id="configModal" class="modal">
     <div class="modal-content">
